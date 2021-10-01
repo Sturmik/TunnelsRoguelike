@@ -9,9 +9,12 @@ int main()
     window.create(sf::VideoMode(800, 600), "Tunnels");
     window.setFramerateLimit(60);
     // Create game object
+    sf::Texture test;
+    test.loadFromFile("test.png");
     GameObject obj;
     obj.setPosition(300, 300);
-    obj.setScale(sf::Vector2f(15.f, 15.f));
+    obj.setScale(sf::Vector2f(200.f, 200.f));
+    obj.SetTexture(test);
     int x = obj.getPosition().x;
     // Start loop
     while (window.isOpen())

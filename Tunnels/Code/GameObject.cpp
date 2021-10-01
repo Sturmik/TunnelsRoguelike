@@ -19,11 +19,6 @@ GameObject::GameObject()
 	quad[1].position = sf::Vector2f(1.f, -1.f);
 	quad[2].position = sf::Vector2f(-1.f, -1.f);
 	quad[3].position = sf::Vector2f(-1.f, 1.f);
-	// Define its texture area
-	quad[0].texCoords = sf::Vector2f(1.f, 1.f);
-	quad[1].texCoords = sf::Vector2f(1.f, -1.f);
-	quad[2].texCoords = sf::Vector2f(-1.f, -1.f);
-	quad[3].texCoords = sf::Vector2f(-1.f, 1.f);
 	// Set it to member variable
 	_gameObjectVertices = quad;
 }
@@ -31,9 +26,9 @@ GameObject::GameObject()
 void GameObject::SetTexture(sf::Texture texture)
 { 
 	_gameObjectTexture = texture;
-}
-
-void GameObject::SetVectorArray(sf::VertexArray vertexArray) 
-{ 
-	_gameObjectVertices = vertexArray;
+	// Define texture area for gameobject
+	_gameObjectVertices[3].texCoords = sf::Vector2f(0.f, 0.f);
+	_gameObjectVertices[2].texCoords = sf::Vector2f(texture.getSize().x, 0.f);
+	_gameObjectVertices[1].texCoords = sf::Vector2f(texture.getSize().x, texture.getSize().y);
+	_gameObjectVertices[0].texCoords = sf::Vector2f(0.f, texture.getSize().y);
 }

@@ -14,6 +14,4 @@ public:
 	GameObject();
 	// Set texture for gameobject
 	void SetTexture(sf::Texture texture);
-	// Set vector array of game object
-	void SetVectorArray(sf::VertexArray vertexArray);
 };
