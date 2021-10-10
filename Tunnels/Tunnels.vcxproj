@@ -19,13 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Code\GameManager.cpp" />
     <ClCompile Include="Code\GameObject.cpp" />
     <ClCompile Include="Code\Main.cpp" />
     <ClCompile Include="Code\UtilityTime.cpp" />
+    <ClCompile Include="Code\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Code\GameManager.h" />
     <ClInclude Include="Code\GameObject.h" />
     <ClInclude Include="Code\UtilityTime.h" />
+    <ClInclude Include="Code\WindowManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
