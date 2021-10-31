@@ -1,3 +1,5 @@
+#pragma once
+
 #include "GameObject.h"
 #include <iostream>
 #include <vector>
@@ -6,28 +8,21 @@
 class WindowManager
 {
 private:
-#pragma region Variables
 	// Main window
 	sf::RenderWindow _window;
 	// List of objects to draw
-	std::vector<GameObject> _gameObjects;
-#pragma endregion
-#pragma region Methods
-	// Start window and loop in it
-	void Update();
-#pragma endregion
+	std::vector<GameObject*> _gameObjects;
 public:
-#pragma region ConstructorDeconstructor
 	WindowManager();
 	// Default deconstructor
 	~WindowManager();
-#pragma endregion 
-#pragma region Methods
+
 	// Open window and loop in it
 	void OpenWindow(sf::VideoMode videoMode, std::string name);
 	// Add drawable object
 	void AddObject(GameObject& newObject);
 	// Delete drawable object
 	void RemoveObject(GameObject& objectToRemove);
-#pragma endregion
+	// Update everything in window
+	void Update();
 };

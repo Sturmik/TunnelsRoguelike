@@ -1,25 +1,21 @@
 #pragma once
 
 #include "WindowManager.h"
+#include "MapGenerator.h"
 
 // Game manager controls flow of the game
 class GameManager
 {
 private:
-#pragma region Variables
 	// Window manager controls all window process
-	WindowManager _windowManager;
-#pragma endregion
-#pragma region Methods
-	// Update state of game
+    WindowManager _windowManager;
+
+	// Update state of the game
 	void UpdateState();
-#pragma endregion
 public:
-#pragma region Constructor
+	// Default constructor
 	GameManager();
-#pragma endregion
-#pragma region Methods
+
 	// Starts the game
 	void Start();
-#pragma endregion
 };

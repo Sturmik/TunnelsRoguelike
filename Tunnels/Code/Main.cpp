@@ -3,7 +3,8 @@
 
 int main()
 {
-    GameManager m;
-    m.Start();
-    return 0;
+	srand(time(0));
+	GameManager gm;
+	gm.Start();
+	return 0;
 }

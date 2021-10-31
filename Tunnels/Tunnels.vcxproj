@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -22,12 +22,16 @@
     <ClCompile Include="Code\GameManager.cpp" />
     <ClCompile Include="Code\GameObject.cpp" />
     <ClCompile Include="Code\Main.cpp" />
+    <ClCompile Include="Code\MapCell.cpp" />
+    <ClCompile Include="Code\MapGenerator.cpp" />
     <ClCompile Include="Code\UtilityTime.cpp" />
     <ClCompile Include="Code\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\GameManager.h" />
     <ClInclude Include="Code\GameObject.h" />
+    <ClInclude Include="Code\MapCell.h" />
+    <ClInclude Include="Code\MapGenerator.h" />
     <ClInclude Include="Code\UtilityTime.h" />
     <ClInclude Include="Code\WindowManager.h" />
   </ItemGroup>
