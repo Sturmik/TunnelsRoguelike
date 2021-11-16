@@ -2,7 +2,7 @@
 
 #pragma region RoomMethods
 
-Vector2Int Room::GetDoorPositionOnPlacement(Placement doorPlacement)
+Point2DInt Room::GetDoorPositionOnPlacement(DoorPlacement doorPlacement)
 {
 	for (int i = 0; i < _doors.size(); i++)
 	{
@@ -11,27 +11,30 @@ Vector2Int Room::GetDoorPositionOnPlacement(Placement doorPlacement)
 			return _doors[i].position;
 		}
 	}
+	Point2DInt result;
 	switch (doorPlacement)
 	{
-	case Placement::Top:
-	case Placement::Bottom:
-		return (Vector2Int(GetRightBottomPosition().x / 2,
-			Placement::Top
-			? GetLeftTopPosition().y
-			: GetRightBottomPosition().y));
-	case Placement::Right:
-	case Placement::Left:
-		return (Vector2Int(GetRightBottomPosition().y / 2,
-			Placement::Top
-			? GetLeftTopPosition().x
-			: GetRightBottomPosition().x));
+	case DoorPlacement::Top:
+	case DoorPlacement::Bottom:
+		result = Point2DInt((_leftTopPosition.x + _rightBottomPosition.x) / 2,
+			doorPlacement == DoorPlacement::Top
+			? _leftTopPosition.y
+			: _rightBottomPosition.y);
+		break;
+	case DoorPlacement::Right:
+	case DoorPlacement::Left:
+		result = Point2DInt(doorPlacement == DoorPlacement::Left
+			? _leftTopPosition.x
+			: _rightBottomPosition.x,
+			(_leftTopPosition.y + _rightBottomPosition.y) / 2);
+		break;
 	default:
 		break;
 	}
-	return Vector2Int(-1, -1);
+	return result;
 }
 
-bool Room::HasDoorOnPlacement(Placement doorPlacement)
+bool Room::HasDoorOnPlacement(DoorPlacement doorPlacement)
 {
 	// Check placement, there can only be one door on one side
 	for (int i = 0; i < _doors.size(); i++)
@@ -44,44 +47,69 @@ bool Room::HasDoorOnPlacement(Placement doorPlacement)
 	return false;
 }
 
-bool Room::AddDoor(Placement doorPlacementPos, int doorPos)
+Point2DInt Room::GetClosestDoorPositionToPosition(Point2DInt position)
 {
-	// Check placement, there can only be one door on one side
-	if (HasDoorOnPlacement(doorPlacementPos))
+	Point2DInt closestPosition;
+	double minDistance;
+	for (int i = DoorPlacement::Top; i <= DoorPlacement::Left; i++)
 	{
-		return false;
+		Point2DInt doorPos = GetDoorPositionOnPlacement(static_cast<DoorPlacement>(i));
+		double distance = doorPos.Distance(position);
+		if (i == DoorPlacement::Top || distance < minDistance)
+		{ minDistance = distance; closestPosition = doorPos; }
 	}
-	// Check coordinates
-	Vector2Int doorCoordinates;
-	switch (doorPlacementPos)
-	{
-	case Top:
-	case Bottom:
-		doorCoordinates.x = doorPos;
-		if (doorPos <= _leftTopPosition.x || doorPos >= _rightBottomPosition.x)
-		{
-			doorCoordinates.x = (_rightBottomPosition.x + _leftTopPosition.x) / 2;
-		}
-		doorCoordinates.y = doorPlacementPos == Top ? _leftTopPosition.y : _rightBottomPosition.y;
-		break;
-	case Right:
-	case Left:
-		doorCoordinates.y = doorPos;
-		if (doorPos <= _leftTopPosition.y || doorPos >= _rightBottomPosition.y)
-		{
-			doorCoordinates.y = (_rightBottomPosition.y + _leftTopPosition.y) / 2;
-		}
-		doorCoordinates.x = doorPlacementPos == Left ? _leftTopPosition.x : _rightBottomPosition.x;
-		break;
-	default:
-		break;
-	}
-	// Add new door
-	_doors.push_back(Door(doorCoordinates, doorPlacementPos));
-	return true;
+	return closestPosition;
 }
 
-bool Room::RemoveDoor(Placement doorPlacement)
+bool Room::AddDoor(Point2DInt doorPos, Room* connectedTo)
+{
+	int previousNumOfDoors = _doors.size();
+	// Checking left and right wall 
+	if (doorPos.y >= _leftTopPosition.y && doorPos.y <= _rightBottomPosition.y)
+	{
+		// Left door
+		if (doorPos.x == _leftTopPosition.x)
+		{
+			if (!HasDoorOnPlacement(DoorPlacement::Left)) {
+				_doors.push_back(Door(doorPos, DoorPlacement::Left));
+			}
+		}
+		// Right door
+		if (doorPos.x == _rightBottomPosition.x)
+		{
+			if (!HasDoorOnPlacement(DoorPlacement::Right)) {
+				_doors.push_back(Door(doorPos, DoorPlacement::Right));
+			}
+		}
+	}
+	// Checking top and bottom wall
+	if (doorPos.x >= _leftTopPosition.x && doorPos.x <= _rightBottomPosition.x)
+	{
+		// Top wall
+		if (doorPos.y == _leftTopPosition.y)
+		{
+			if (!HasDoorOnPlacement(DoorPlacement::Top)) {
+				_doors.push_back(Door(doorPos, DoorPlacement::Top));
+			}
+		}
+		// Bottom wall
+		if (doorPos.y == _rightBottomPosition.y)
+		{
+			if (!HasDoorOnPlacement(DoorPlacement::Bottom)) {
+				_doors.push_back(Door(doorPos, DoorPlacement::Bottom));
+			}
+		}
+	}
+	// Is door created
+	bool isDoorCreated = _doors.size() > previousNumOfDoors;
+	if (isDoorCreated)
+	{
+		_doors[_doors.size() - 1].connectedRoom = connectedTo;
+	}
+	return isDoorCreated;
+}
+
+bool Room::RemoveDoor(DoorPlacement doorPlacement)
 {
 	for (int i = 0; i < _doors.size(); i++)
 	{
@@ -95,24 +123,13 @@ bool Room::RemoveDoor(Placement doorPlacement)
 	return false;
 }
 
-void Room::Move(int dx, int dy)
-{
-	_leftTopPosition.x += dx; _leftTopPosition.y += dy;
-	_rightBottomPosition.x += dx; _rightBottomPosition.y += dy;
-	for (int i = 0; i < _doors.size(); i++)
-	{
-		_doors[i].position.x += dx;
-		_doors[i].position.y += dy;
-	}
-}
-
 bool Room::DoesIntersectWithRoom(Room intersectRoom, int spaceBetweenRooms)
 {
 	// Value of space between rooms must always be more or equal one
 	if (spaceBetweenRooms < 1) { spaceBetweenRooms = 1; }
 	// Getting intersection room info
-	Vector2Int intersectRoomTopLeft = intersectRoom.GetLeftTopPosition();
-	Vector2Int intersectRoomBottomRight = intersectRoom.GetRightBottomPosition();
+	Point2DInt intersectRoomTopLeft = intersectRoom.GetLeftTopPosition();
+	Point2DInt intersectRoomBottomRight = intersectRoom.GetRightBottomPosition();
 	// Checking intersection
 	for (int pointX = _leftTopPosition.x; pointX <= _rightBottomPosition.x; pointX++)
 	{
@@ -130,85 +147,181 @@ bool Room::DoesIntersectWithRoom(Room intersectRoom, int spaceBetweenRooms)
 	return false;
 }
 
-Vector2Int Room::GetSizeOfRoom()
+Point2DInt Room::GetSizeOfRoom()
 {
-	return Vector2Int(_rightBottomPosition.x - _leftTopPosition.x,
+	return Point2DInt(_rightBottomPosition.x - _leftTopPosition.x,
 		_rightBottomPosition.y - _leftTopPosition.y);
 }
 
-bool Room::HasWayToRoom(Room& room)
+bool Room::HasWayToRoom(Room& destinationRoom, std::vector<Room*>& visitedRooms)
 {
+	// Return true, if we are at the destination room
+	if (&destinationRoom == this) return true;
+	// Add recent room to visited ones
+	visitedRooms.push_back(this);
+	// Boolean variable for room searching
+	bool hasWay = true; bool isVisited;
 	// Go through each door in the room
 	for (int i = 0; i < _doors.size(); i++)
 	{
+		// Check, if the room to which the door lead
+		// was already visited
+		isVisited = false;
+		for (int roomCheck = 0; roomCheck < visitedRooms.size(); roomCheck++)
+		{
+			if (visitedRooms[roomCheck] == _doors[i].connectedRoom)
+			{
+				isVisited = true;
+				break;
+			}
+		}
+		if (isVisited) { continue; }
 		// Check room by it's address
-		if (_doors[i].connectedRoom == &room)
+		if (_doors[i].connectedRoom == &destinationRoom)
 		{
 			// If it is the room, we are looking for return true
 			return true;
 		}
+		hasWay = _doors[i].connectedRoom->HasWayToRoom(destinationRoom, visitedRooms);
+		if (hasWay) return true;
 	}
 	// If there are no connections to the room, return false
 	return false;
 }
 
-#pragma endregion
-
-#pragma region MapGeneratorMethods
-
-MapCell** MapGenerator::CreateArr2D(MapCell** array2D, int rows, int columns)
+bool Room::HasWayToRoom(Room& destinationRoom)
 {
-	array2D = new MapCell * [rows];
-	for (int row = 0; row < rows; row++)
-	{
-		array2D[row] = new MapCell[columns];
-	}
-	return array2D;
+	std::vector<Room*> visitedRooms;
+	return HasWayToRoom(destinationRoom, visitedRooms);
 }
 
-void MapGenerator::DrawRoom(MapCell** map2D, Room& room)
+#pragma endregion
+
+#pragma region ANavigation
+
+bool PathFindingAStar::IsCellPassable(std::vector<CellState>& passableCells, Point2DInt cellPos)
 {
-	// Getting position of room points
-	Vector2Int topLeft = room.GetLeftTopPosition();
-	Vector2Int bottomRight = room.GetRightBottomPosition();
-	// Loading texture for drawing
-	sf::Texture floorText, doorText, wallText;
-	floorText.loadFromFile("Textures\\CellOpen.png");
-	doorText.loadFromFile("Textures\\CellDoor.png");
-	wallText.loadFromFile("Textures\\CellWall.png");
-	for (int posY = topLeft.y; posY <= bottomRight.y; posY++)
+	bool isPassable = false;
+	for (int i = 0; i < passableCells.size(); i++)
 	{
-		for (int posX = topLeft.x; posX <= bottomRight.x; posX++)
+		if (_map->GetMap2D()[cellPos.y][cellPos.x].GetCellState() == passableCells[i])
 		{
-			// Set texture
-			map2D[posY][posX].SetTexture(floorText);
-			// Set scale
-			map2D[posY][posX].setScale
-			(sf::Vector2f(map2D[posY][posX].getScale().x, map2D[posY][posX].getScale().y));
-			// Set position
-			map2D[posY][posX].setPosition
-			(sf::Vector2f(posX + posX * map2D[posY][posX].getScale().x,
-				posY +  posY * map2D[posY][posX].getScale().y));
-			// Draw walls
-			if (posY == topLeft.y || posY == bottomRight.y
-				|| posX == topLeft.x || posX == bottomRight.x)
+			isPassable = true;
+			break;
+		}
+	}
+	return isPassable;
+}
+
+std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Point2DInt endPoint,
+	std::vector<CellState>& passableCells)
+{
+	// Check, if start or end position are passable cells
+	if (!IsCellPassable(passableCells, startPoint)
+		|| !IsCellPassable(passableCells, endPoint))
+	{
+		return std::vector<Point2DInt>();
+	}
+
+	// Form node map
+	FormNodeMap(startPoint, endPoint, passableCells);
+
+	// Unchecked nodes list
+	std::list<ANode*> uncheckedNodesList;
+	uncheckedNodesList.push_back(&_aNodeMap[startPoint.y][startPoint.x]);
+
+	// bool check, if we got to the point
+	bool hasFoundEndPoint = false;
+
+	// While there are nodes to check
+	while (!uncheckedNodesList.empty())
+	{
+		// Sort nodes by global goal, so lowest is firts
+		uncheckedNodesList.sort([](const ANode* lNode, const ANode* rNode) {return lNode->GetGlobalDistance() < rNode->GetGlobalDistance(); });
+
+		// If unchecked node is open or an obstacle, discard it
+		while (uncheckedNodesList.front()->IsOpen() ||
+			uncheckedNodesList.front()->IsObstacle())
+		{
+			uncheckedNodesList.pop_front();
+			// If list is empty, that means there is no way,
+			// we can get to our position. Return empty vector
+			if (uncheckedNodesList.empty()) { return std::vector<Point2DInt>(); }
+		}
+		// Get node
+		ANode* aNode = uncheckedNodesList.front();
+		// Set node to opened state
+		aNode->SetOpenState(true);
+		// Pop it out from nodes
+		uncheckedNodesList.pop_front();
+		// Go through all its neighbours
+		for (int i = 0; i < aNode->GetNeighbours().size(); i++)
+		{
+			// Node is not an obstacle or is not opened
+			if (!aNode->GetNeighbours()[i]->IsObstacle() ||
+				!aNode->GetNeighbours()[i]->IsOpen())
 			{
-				map2D[posY][posX].SetTexture(wallText);
-				// Check, if door must be drawn
-				for (int i = 0; i < room.GetDoors().size(); i++)
+				// Add to unchecked nodes
+				uncheckedNodesList.push_back(aNode->GetNeighbours()[i]);
+
+				// If local distance is less than neighbour node
+				if (aNode->GetLocalDistance() + 1 < aNode->GetNeighbours()[i]->GetLocalDistance())
 				{
-					if (room.GetDoors()[i].position.x == posX &&
-						room.GetDoors()[i].position.y == posY)
+					// Set new parent
+					aNode->GetNeighbours()[i]->SetParent(aNode);
+					// Set new local distance
+					aNode->GetNeighbours()[i]->SetLocalDistance(aNode->GetLocalDistance() + 1);
+					// Check, if we are at the end point
+					if (aNode->GetNeighbours()[i]->GetDistanceToTheEndPoint() == 0)
 					{
-						map2D[posY][posX].
-							setScale
-							(sf::Vector2f(map2D[posY][posX].getScale().x / 2,
-								map2D[posY][posX].getScale().y / 2));
-						map2D[posY][posX].SetTexture(doorText);
+						hasFoundEndPoint = true;
 						break;
 					}
 				}
 			}
+		}
+
+		// If we got to the end point - leave
+		if (hasFoundEndPoint) { break; }
+	}
+
+	// Path
+	std::vector<Point2DInt> path;
+	// Fill path with data, if we got to the end point
+	if (hasFoundEndPoint)
+	{
+		// Node for path generating
+		ANode* nodeForPathGenerating = &_aNodeMap[endPoint.y][endPoint.x];
+		// Until we hit start node
+		while (nodeForPathGenerating->GetParent() != nullptr)
+		{
+			// Push position of node
+			path.push_back(nodeForPathGenerating->GetPosition());
+			// Change node to parent
+			nodeForPathGenerating = nodeForPathGenerating->GetParent();
+		}
+		path.push_back(nodeForPathGenerating->GetPosition());
+	}
+	// Return path
+	return path;
+}
+
+#pragma endregion
+
+
+#pragma region MapGeneratorMethods
+
+void MapGenerator::ClearMap()
+{
+	// Sets all to default
+	sf::Texture empty;
+	_map->GetRooms().clear();
+	for (int posY = 0; posY < _map->GetMapHeight(); posY++)
+	{
+		for (int posX = 0; posX < _map->GetMapWidth(); posX++)
+		{
+			_map->GetMap2D()[posY][posX].SetCellState(CellState::None);
+			_map->GetMap2D()[posY][posX].SetTexture(empty);
 		}
 	}
 }
@@ -218,22 +331,49 @@ bool MapGenerator::AddRoom(Room newRoom)
 	// Check if we can fit the room
 	if (!DoesRoomFitInMap(newRoom)) { return false; };
 	// Add room
-	_rooms.push_back(newRoom);
-	DrawRoom(_map, _rooms[_rooms.size() - 1]);
+	_map->GetRooms().push_back(newRoom);
+	// Draw this room
+		// Getting position of room points
+	Point2DInt topLeft = newRoom.GetLeftTopPosition();
+	Point2DInt bottomRight = newRoom.GetRightBottomPosition();
+	// Drawing room
+	for (int posY = topLeft.y; posY <= bottomRight.y; posY++)
+	{
+		for (int posX = topLeft.x; posX <= bottomRight.x; posX++)
+		{
+			// Set cell state to free 
+			_map->GetMap2D()[posY][posX].SetCellState(CellState::Free);
+			// Set floor texture
+			_map->GetMap2D()[posY][posX].SetTexture(_floorTexture);
+			// Set position
+			_map->GetMap2D()[posY][posX].setPosition
+			(sf::Vector2f(posX + posX * _map->GetMap2D()[posY][posX].getScale().x,
+				posY + posY * _map->GetMap2D()[posY][posX].getScale().y));
+			// Draw walls
+			if (posY == topLeft.y || posY == bottomRight.y
+				|| posX == topLeft.x || posX == bottomRight.x)
+			{
+				// Set cell state to occupied
+				_map->GetMap2D()[posY][posX].SetCellState(CellState::Occupied);
+				// Set wall texture
+				_map->GetMap2D()[posY][posX].SetTexture(_wallTexture);
+			}
+		}
+	}
 	return true;
 }
 
 bool MapGenerator::CheckRoomForMapBoundaries(Room newRoom)
 {
 	// Check boundaries
-	if (newRoom.GetLeftTopPosition().x >= _mapWidth ||
-		newRoom.GetLeftTopPosition().y >= _mapHeight ||
-		newRoom.GetLeftTopPosition().x < 0 ||
-		newRoom.GetLeftTopPosition().y < 0 ||
-		newRoom.GetRightBottomPosition().x >= _mapWidth ||
-		newRoom.GetRightBottomPosition().y >= _mapHeight ||
-		newRoom.GetRightBottomPosition().x < 0 ||
-		newRoom.GetRightBottomPosition().y < 0)
+	if (newRoom.GetLeftTopPosition().x >= _map->GetMapWidth() - MAP_BORDER_OFFSET ||
+		newRoom.GetLeftTopPosition().y >= _map->GetMapHeight() - MAP_BORDER_OFFSET ||
+		newRoom.GetLeftTopPosition().x < MAP_BORDER_OFFSET ||
+		newRoom.GetLeftTopPosition().y < MAP_BORDER_OFFSET ||
+		newRoom.GetRightBottomPosition().x >= _map->GetMapWidth() - MAP_BORDER_OFFSET ||
+		newRoom.GetRightBottomPosition().y >= _map->GetMapHeight() - MAP_BORDER_OFFSET ||
+		newRoom.GetRightBottomPosition().x < MAP_BORDER_OFFSET ||
+		newRoom.GetRightBottomPosition().y < MAP_BORDER_OFFSET)
 	{
 		return false;
 	}
@@ -248,10 +388,10 @@ bool MapGenerator::DoesRoomFitInMap(Room newRoom)
 		return false;
 	}
 	// Check intersection with other rooms
-	for (int i = 0; i < _rooms.size(); i++)
+	for (int i = 0; i < _map->GetRooms().size(); i++)
 	{
 		// If our room collides 
-		if (_rooms[i].DoesIntersectWithRoom(newRoom, 2))
+		if (_map->GetRooms()[i].DoesIntersectWithRoom(newRoom, 2))
 		{
 			return false;
 		}
@@ -264,21 +404,21 @@ void MapGenerator::GenerateRooms(int numberOfRooms)
 	while (numberOfRooms > 0)
 	{
 		// Generate room size
-		int roomWidth = 3 + rand() % _mapWidth / 4;
-		int roomHeight = 3 + rand() % _mapHeight / 4;
+		int roomWidth = 3 + rand() % _map->GetMapWidth() / 4;
+		int roomHeight = 3 + rand() % _map->GetMapHeight() / 4;
 		// Random possible rooms
 		std::vector<Room> possibleRooms;
 		// Cycle for check if there any possible positions for this room
 		while (true)
 		{
 			// Looking for positions
-			for (int yPos = 0; yPos < _mapHeight; yPos++)
+			for (int yPos = 0; yPos < _map->GetMapHeight(); yPos++)
 			{
-				for (int xPos = 0; xPos < _mapWidth; xPos++)
+				for (int xPos = 0; xPos < _map->GetMapWidth(); xPos++)
 				{
-					// Generation position
-					Vector2Int leftTop(xPos, yPos);
-					Vector2Int rightBottom(xPos + roomWidth, yPos + roomHeight);
+					// Generate position
+					Point2DInt leftTop(xPos, yPos);
+					Point2DInt rightBottom(xPos + roomWidth, yPos + roomHeight);
 					// GenerateRoom
 					Room newRoom(leftTop, rightBottom);
 					// If room fits add it to positions
@@ -335,26 +475,26 @@ void MapGenerator::GenerateRooms(int numberOfRooms)
 	}
 }
 
-std::vector<Room> MapGenerator::GetClosestRoomsToPosition(Vector2Int position, Room& roomToIgnore)
+std::vector<Room*> MapGenerator::GetClosestRoomsToPosition(Point2DInt position, Room& roomToIgnore)
 {
 	// Form vector of closest rooms to the recent one
-	std::map<double, Room> roomsDistance;
+	std::map<double, Room*> roomsDistance;
 	std::vector<double> roomsDistanceKeys;
 	// Go through all rooms
-	for (int roomAnalyze = 0; roomAnalyze < _rooms.size(); roomAnalyze++)
+	for (int roomAnalyze = 0; roomAnalyze < _map->GetRooms().size(); roomAnalyze++)
 	{
-		// No point in checking our own room
-		if (&roomToIgnore == &_rooms[roomAnalyze]) { continue; }
+		// Ignore specific room
+		if (&roomToIgnore == &_map->GetRooms()[roomAnalyze]) { continue; }
 		// Check distance
 		double distance = position.Distance
-		(_rooms[roomAnalyze].GetCenterOfTheRoomPosition());
+		(_map->GetRooms()[roomAnalyze].GetCenterOfTheRoomPosition());
 		roomsDistanceKeys.push_back(distance);
-		roomsDistance[distance] = _rooms[roomAnalyze];
+		roomsDistance[distance] = &_map->GetRooms()[roomAnalyze];
 	}
 	// Sort keys
 	std::sort(roomsDistanceKeys.begin(), roomsDistanceKeys.end());
 	// Form vector of rooms
-	std::vector<Room> closestRooms;
+	std::vector<Room*> closestRooms;
 	for (int i = 0; i < roomsDistanceKeys.size(); i++)
 	{
 		closestRooms.push_back(roomsDistance[roomsDistanceKeys[i]]);
@@ -363,63 +503,97 @@ std::vector<Room> MapGenerator::GetClosestRoomsToPosition(Vector2Int position, R
 	return closestRooms;
 }
 
-void MapGenerator::GenerateTunnel(Vector2Int startPoint, Vector2Int endPoint)
+void MapGenerator::GenerateTunnel(Room* startRoom, Point2DInt startPoint, Room* endRoom, Point2DInt endPoint)
 {
+	// Set cell states to free state
+	_map->GetMap2D()[startPoint.y][startPoint.x].SetCellState(CellState::Free);
+	_map->GetMap2D()[endPoint.y][endPoint.x].SetCellState(CellState::Free);
 
+	// Form vector of passable cells and try to make the path
+	std::vector<CellState> passableCells = { CellState::None, CellState::Free };
+	std::vector<Point2DInt> path = _pathFinding->GeneratePath(startPoint, endPoint, passableCells);
+	// If path was not formed
+	if (path.size() == 0)
+	{
+		// Mark cells as occupied again
+		_map->GetMap2D()[startPoint.y][startPoint.x].SetCellState(CellState::Occupied);
+		_map->GetMap2D()[endPoint.y][endPoint.x].SetCellState(CellState::Occupied);
+		// Exit function
+		return;
+	}
+
+	// Add doors, if needed
+	startRoom->AddDoor(startPoint, endRoom);
+	endRoom->AddDoor(endPoint, startRoom);
+
+	// Create tunnel
+	for (int i = 1; i < path.size() - 1; i++)
+	{
+		// Set state
+		_map->GetMap2D()[path[i].y][path[i].x].SetCellState(CellState::Free);
+		// Set texture
+		_map->GetMap2D()[path[i].y][path[i].x].SetTexture(_tunnelTexture);
+		// Set position
+		_map->GetMap2D()[path[i].y][path[i].x].setPosition
+		(sf::Vector2f(path[i].x + path[i].x * _map->GetMap2D()[path[i].y][path[i].x].getScale().x,
+			path[i].y + path[i].y * _map->GetMap2D()[path[i].y][path[i].x].getScale().y));
+	}
+
+	// Add textures on doors positions and update their state to occupied on start point
+	_map->GetMap2D()[startPoint.y][startPoint.x].SetCellState(CellState::Occupied);
+	_map->GetMap2D()[startPoint.y][startPoint.x].SetTexture(_doorTexture);
+
+	// Add textures on doors positions and update their state to occupied on end point
+	_map->GetMap2D()[endPoint.y][endPoint.x].SetCellState(CellState::Occupied);
+	_map->GetMap2D()[endPoint.y][endPoint.x].SetTexture(_doorTexture);
 }
 
-void MapGenerator::GenerateRoomConnections()
+void MapGenerator::GenerateRoomConnections(Room* roomConnector)
 {
-	// Go through each room and generate doors and connections
-	// between other rooms, if possible
-	for (int room = 0; room < _rooms.size(); room++)
+	// Go through each potential door (top, right, bottom, left)
+	for (int place = DoorPlacement::Top; place <= DoorPlacement::Left; place++)
 	{
-		// Placement for room doors generation
-		Placement place = Placement::Top;
-		// Go through each potential door (top, right, bottom, left)
-		for (int place = Placement::Top; place <= Placement::Left; place++)
+		// Door position
+		Point2DInt doorPosition = roomConnector->GetDoorPositionOnPlacement(static_cast<DoorPlacement>(place));
+		// Get closest rooms to our door position
+		std::vector<Room*> closestRooms
+			= GetClosestRoomsToPosition(doorPosition, *roomConnector);
+		// Check, if there are any other rooms in given direction
+		bool roomsExist = false;
+		// Look for rooms
+		for (int roomCheck = 0; roomCheck < closestRooms.size(); roomCheck++)
 		{
-			// Door position
-			Vector2Int doorPosition = _rooms[room].GetDoorPositionOnPlacement((Placement)place);
-			// Check, if there are any other rooms in given direction
-			bool roomsExist = false;
-			// Look for rooms
-			for (int i = 0; i < _rooms.size(); i++)
+			switch (place)
 			{
-				if (room == i) continue;
-				switch (place)
-				{
-				case Top:
-					roomsExist = _rooms[room].GetCenterOfTheRoomPosition().y > doorPosition.y;
-					break;
-				case Right:
-					roomsExist = _rooms[room].GetCenterOfTheRoomPosition().x > doorPosition.x;
-					break;
-				case Bottom:
-					roomsExist = _rooms[room].GetCenterOfTheRoomPosition().y < doorPosition.y;
-					break;
-				case Left:
-					roomsExist = _rooms[room].GetCenterOfTheRoomPosition().x < doorPosition.x;
-					break;
-				default:
-					break;
-				}
-				if (roomsExist) { break; }
+			case Top:
+				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).y + MAP_BORDER_OFFSET < doorPosition.y;
+				break;
+			case Right:
+				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).x - MAP_BORDER_OFFSET > doorPosition.x;
+				break;
+			case Bottom:
+				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).y + MAP_BORDER_OFFSET > doorPosition.y;
+				break;
+			case Left:
+				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).x - MAP_BORDER_OFFSET < doorPosition.x;
+				break;
+			default:
+				break;
 			}
-			// If rooms exist initiate search
-			if (roomsExist)
+			if (!roomsExist) { closestRooms.erase(closestRooms.begin() + roomCheck); roomCheck -= 1; }
+		}
+		// Go through all closest rooms
+		for (int closestRoomIt = 0; closestRoomIt < closestRooms.size(); closestRoomIt++)
+		{
+			// If, we can't get to that room, build the connection to it
+			if (!roomConnector->HasWayToRoom(*closestRooms[closestRoomIt]))
 			{
-				// Get closest rooms to our door position
-				std::vector<Room> closestRooms = GetClosestRoomsToPosition(doorPosition, _rooms[room]);
-				// Go through all closest rooms
-				for (int i = 0; i < closestRooms.size(); i++)
-				{
-					// If, we can't get to that room, build the connection to it
-					if (!_rooms[room].HasWayToRoom(closestRooms[i]))
-					{
-
-					}
-				}
+				// Generate tunnel with our recent door
+				GenerateTunnel(roomConnector, doorPosition,
+					closestRooms[closestRoomIt], closestRooms[closestRoomIt]->
+					GetClosestDoorPositionToPosition(doorPosition));
+				GenerateRoomConnections(closestRooms[closestRoomIt]);
+				break;
 			}
 		}
 	}

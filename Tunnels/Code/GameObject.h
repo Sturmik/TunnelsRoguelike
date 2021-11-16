@@ -2,6 +2,20 @@
 
 #include <SFML/Graphics.hpp>
 
+// Point struct, represents x and y
+struct Point2DInt
+{
+	int x, y;
+	Point2DInt() { x = 0; y = 0; }
+	Point2DInt(int x, int y) : x(x), y(y) {}
+
+	// Calculates distance between recent and given point
+	double Distance(Point2DInt vector)
+	{
+		return (x - vector.x) * (x - vector.x) + (y - vector.y) * (y - vector.y);
+	}
+};
+
 // Base Game object class for all active objects in game
 class GameObject : public sf::Drawable,  public sf::Transformable
 {

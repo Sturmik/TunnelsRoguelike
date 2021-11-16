@@ -10,9 +10,8 @@ private:
     static sf::Time _setTime;
     static sf::Clock _deltaClock;
 
-    // It is singleton, so we won't allow to initialize it
+    // It is functor class, so we won't allow to initialize it
     UtilityTime();
-
 public:
     // Start frame timer (restarts timer)
     static void FrameStartTime();

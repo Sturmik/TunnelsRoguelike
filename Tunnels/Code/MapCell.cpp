@@ -10,12 +10,7 @@ CellState MapCell::GetCellState()
 	return _cellState;
 }
 
-void MapCell::SetGameObject(GameObject* gameObject)
-{
-	_gameObject = gameObject;
-}
-
-GameObject* MapCell::GetGameObject()
+std::vector<GameObject*>& MapCell::GetGameObjectVector()
 {
 	return _gameObject;
 }

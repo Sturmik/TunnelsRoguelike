@@ -8,15 +8,30 @@ GameManager::GameManager()
 void GameManager::Start()
 {
 	// Open window
-	_windowManager.OpenWindow(sf::VideoMode(800, 600), "Tunnels");
+	_windowManager.OpenWindow(sf::VideoMode(1920, 1080), "Tunnels");
 	// Generate map
-	MapGenerator mapGenerator(120, 60);
-	mapGenerator.GenerateMap(8);
-	for (int i = 0; i < mapGenerator.GetMapHeight(); i++)
+
+	/// <summary>
+	///  TEST
+	//GameObject test;
+	//sf::Texture toLoad; toLoad.loadFromFile("test.png");
+	//test.SetTexture(toLoad);
+	//test.setPosition(300, 300);
+	//test.setScale(150, 150);
+	//_windowManager.AddObject(Layer::FrontLayer, &test);
+	/// </summary>
+
+	Map map(120, 60);
+	MapGenerator mapGenerator(&map);
+	mapGenerator.GenerateMap(9);
+	for (int i = 0; i < map.GetMapHeight(); i++)
 	{
-		for (int j = 0; j < mapGenerator.GetMapWidth(); j++)
+		for (int j = 0; j < map.GetMapWidth(); j++)
 		{
-			_windowManager.AddObject(mapGenerator.GetMap()[i][j]);
+			if (map.GetMap2D()[i][j].GetCellState() != CellState::None)
+			{
+				_windowManager.AddObject(Layer::BackLayer, &map.GetMap2D()[i][j]);
+			}
 		}
 	}
 	// Start the game, by updating its state

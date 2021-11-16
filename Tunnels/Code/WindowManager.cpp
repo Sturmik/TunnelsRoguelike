@@ -1,6 +1,6 @@
 #include "WindowManager.h"
 
-WindowManager::WindowManager() :_window(), _gameObjects()
+WindowManager::WindowManager() :_window(), _gameObjectsLayers()
 {
     // Initialize
 }
@@ -28,9 +28,17 @@ void WindowManager::Update()
     // Clear window
     _window.clear();
     // Draw all objects
-    for (int i = 0; i < _gameObjects.size(); i++)
+    for (int layer = Layer::BackLayer; layer < Layer::InterfaceLayer; layer++)
     {
-        _window.draw(*_gameObjects[i]);
+        for (int object = 0; object < _gameObjectsLayers[static_cast<Layer>(layer)].size(); object++)
+        {
+            if (_gameObjectsLayers[static_cast<Layer>(layer)][object] == nullptr)
+            {
+                _gameObjectsLayers[static_cast<Layer>(layer)].erase(_gameObjectsLayers[static_cast<Layer>(layer)].begin() + object);
+                continue;
+            }
+            _window.draw(*_gameObjectsLayers[static_cast<Layer>(layer)][object]);
+        }
     }
     // Display everything on window
     _window.display();
@@ -44,19 +52,23 @@ void WindowManager::OpenWindow(sf::VideoMode videoMode, std::string name)
     }
 }
 
-void WindowManager::AddObject(GameObject& newObject)
+void WindowManager::AddObject(Layer layer, GameObject* newObject)
 {
-    _gameObjects.push_back(&newObject);
+    _gameObjectsLayers[layer].push_back(newObject);
 }
 
-void WindowManager::RemoveObject(GameObject& objectToRemove)
+void WindowManager::RemoveObject(GameObject* objectToRemove)
 {
-    for (int i = 0; i < _gameObjects.size(); i++)
+    for (int layer = Layer::BackLayer; layer < Layer::InterfaceLayer; layer++)
     {
-        if (_gameObjects[i] == &objectToRemove)
-        { 
-            _gameObjects.erase(_gameObjects.begin() + i);
-            return;
+        Layer objectLayer = static_cast<Layer>(layer);
+        for (int object = 0; object < _gameObjectsLayers[objectLayer].size(); object++)
+        {
+            if (_gameObjectsLayers[objectLayer][object] == objectToRemove)
+            {
+                _gameObjectsLayers[objectLayer].erase(_gameObjectsLayers[objectLayer].begin() + object);
+                continue;
+            }
         }
     }
 }

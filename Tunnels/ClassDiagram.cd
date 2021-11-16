@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GameManager" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAABABAAQA=</HashCode>
+      <FileName>Code\GameManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameObject" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAIAAAIACAAAAaAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Code\GameObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MapCell" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAABAAAAAAAGAAEAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Code\MapCell.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Room" Collapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIAgAUAAAAARAQAACBAAAASAAAIAMQAAAAAAAAAAAAA=</HashCode>
+      <FileName>Code\MapGenerator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Map" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAQABAAAAAEAACAEAAAAAAAAgAIAEAIAAAAAAA=</HashCode>
+      <FileName>Code\MapGenerator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PathFindingAStar" Collapsed="true">
+    <Position X="3" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAEAAIAoAAAAAEAAAAAAAIA=</HashCode>
+      <FileName>Code\MapGenerator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MapGenerator" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAACCAAAAACCABAABAAAYCAQAADAAEQAiAAQAAA=</HashCode>
+      <FileName>Code\MapGenerator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityTime" Collapsed="true">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAQAAAAAAAAAAIAAAAAEAACAAAAAAAAQ=</HashCode>
+      <FileName>Code\UtilityTime.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WindowManager" Collapsed="true">
+    <Position X="3" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQAACAAAgAAAACAAAAAAAAABAAAgAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Code\WindowManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Point2DInt" Collapsed="true">
+    <Position X="3" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAABAAABgAAAAAAA=</HashCode>
+      <FileName>Code\GameObject.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="CellState" Collapsed="true">
+    <Position X="3" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAI=</HashCode>
+      <FileName>Code\MapCell.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DoorPlacement" Collapsed="true">
+    <Position X="4.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAAAAIAAAACACAAAAAAAA=</HashCode>
+      <FileName>Code\MapGenerator.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Layer" Collapsed="true">
+    <Position X="6.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAAAAAAAAAAAAAAAAABAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Code\WindowManager.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
