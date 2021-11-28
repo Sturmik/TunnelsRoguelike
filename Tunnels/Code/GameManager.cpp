@@ -23,7 +23,7 @@ void GameManager::Start()
 
 	Map map(120, 60);
 	MapGenerator mapGenerator(&map);
-	mapGenerator.GenerateMap(9);
+	mapGenerator.GenerateMap(10);
 	for (int i = 0; i < map.GetMapHeight(); i++)
 	{
 		for (int j = 0; j < map.GetMapWidth(); j++)

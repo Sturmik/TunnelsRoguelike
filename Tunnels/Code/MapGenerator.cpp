@@ -478,6 +478,7 @@ void MapGenerator::GenerateRooms(int numberOfRooms)
 std::vector<Room*> MapGenerator::GetClosestRoomsToPosition(Point2DInt position, Room& roomToIgnore)
 {
 	// Form vector of closest rooms to the recent one
+	
 	std::map<double, Room*> roomsDistance;
 	std::vector<double> roomsDistanceKeys;
 	// Go through all rooms
@@ -487,7 +488,7 @@ std::vector<Room*> MapGenerator::GetClosestRoomsToPosition(Point2DInt position, 
 		if (&roomToIgnore == &_map->GetRooms()[roomAnalyze]) { continue; }
 		// Check distance
 		double distance = position.Distance
-		(_map->GetRooms()[roomAnalyze].GetCenterOfTheRoomPosition());
+		(_map->GetRooms()[roomAnalyze].GetClosestDoorPositionToPosition(position));
 		roomsDistanceKeys.push_back(distance);
 		roomsDistance[distance] = &_map->GetRooms()[roomAnalyze];
 	}
@@ -548,52 +549,55 @@ void MapGenerator::GenerateTunnel(Room* startRoom, Point2DInt startPoint, Room* 
 	_map->GetMap2D()[endPoint.y][endPoint.x].SetTexture(_doorTexture);
 }
 
-void MapGenerator::GenerateRoomConnections(Room* roomConnector)
+void MapGenerator::GenerateRoomConnections()
 {
-	// Go through each potential door (top, right, bottom, left)
-	for (int place = DoorPlacement::Top; place <= DoorPlacement::Left; place++)
+	for (int room = 0; room < _map->GetRooms().size(); room++)
 	{
-		// Door position
-		Point2DInt doorPosition = roomConnector->GetDoorPositionOnPlacement(static_cast<DoorPlacement>(place));
-		// Get closest rooms to our door position
-		std::vector<Room*> closestRooms
-			= GetClosestRoomsToPosition(doorPosition, *roomConnector);
-		// Check, if there are any other rooms in given direction
-		bool roomsExist = false;
-		// Look for rooms
-		for (int roomCheck = 0; roomCheck < closestRooms.size(); roomCheck++)
+		Room* roomConnector = &_map->GetRooms()[room];
+		// Go through each potential door (top, right, bottom, left)
+		for (int place = DoorPlacement::Top; place <= DoorPlacement::Left; place++)
 		{
-			switch (place)
+			// Door position
+			Point2DInt doorPosition = roomConnector->GetDoorPositionOnPlacement(static_cast<DoorPlacement>(place));
+			// Get closest rooms to our door position
+			std::vector<Room*> closestRooms
+				= GetClosestRoomsToPosition(doorPosition, *roomConnector);
+			// Check, if there are any other rooms in given direction
+			bool roomsExist = false;
+			// Look for rooms
+			for (int roomCheck = 0; roomCheck < closestRooms.size(); roomCheck++)
 			{
-			case Top:
-				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).y + MAP_BORDER_OFFSET < doorPosition.y;
-				break;
-			case Right:
-				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).x - MAP_BORDER_OFFSET > doorPosition.x;
-				break;
-			case Bottom:
-				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).y + MAP_BORDER_OFFSET > doorPosition.y;
-				break;
-			case Left:
-				roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).x - MAP_BORDER_OFFSET < doorPosition.x;
-				break;
-			default:
-				break;
+				switch (place)
+				{
+				case Top:
+					roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).y + MAP_BORDER_OFFSET < doorPosition.y;
+					break;
+				case Right:
+					roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).x - MAP_BORDER_OFFSET > doorPosition.x;
+					break;
+				case Bottom:
+					roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).y - MAP_BORDER_OFFSET > doorPosition.y;
+					break;
+				case Left:
+					roomsExist = closestRooms[roomCheck]->GetClosestDoorPositionToPosition(doorPosition).x + MAP_BORDER_OFFSET < doorPosition.x;
+					break;
+				default:
+					break;
+				}
+				if (!roomsExist) { closestRooms.erase(closestRooms.begin() + roomCheck); roomCheck -= 1; }
 			}
-			if (!roomsExist) { closestRooms.erase(closestRooms.begin() + roomCheck); roomCheck -= 1; }
-		}
-		// Go through all closest rooms
-		for (int closestRoomIt = 0; closestRoomIt < closestRooms.size(); closestRoomIt++)
-		{
-			// If, we can't get to that room, build the connection to it
-			if (!roomConnector->HasWayToRoom(*closestRooms[closestRoomIt]))
+			// Go through all closest rooms
+			for (int closestRoomIt = 0; closestRoomIt < closestRooms.size(); closestRoomIt++)
 			{
-				// Generate tunnel with our recent door
-				GenerateTunnel(roomConnector, doorPosition,
-					closestRooms[closestRoomIt], closestRooms[closestRoomIt]->
-					GetClosestDoorPositionToPosition(doorPosition));
-				GenerateRoomConnections(closestRooms[closestRoomIt]);
-				break;
+				// If, we can't get to that room, build the connection to it
+				if (!roomConnector->HasWayToRoom(*closestRooms[closestRoomIt]))
+				{
+					// Generate tunnel with our recent door
+					GenerateTunnel(roomConnector, doorPosition,
+						closestRooms[closestRoomIt], closestRooms[closestRoomIt]->
+						GetClosestDoorPositionToPosition(doorPosition));
+					break;
+				}
 			}
 		}
 	}

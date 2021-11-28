@@ -323,7 +323,7 @@ private:
 	// Generate Tunnel between two points, using wave algorithm
 	void GenerateTunnel(Room* startRoom, Point2DInt startPoint, Room* endRoom, Point2DInt endPoint);
 	// Generate room doors
-	void GenerateRoomConnections(Room* roomConnector);
+	void GenerateRoomConnections();
 public:
 	// Default constructor
 	MapGenerator(Map* map)
@@ -360,7 +360,9 @@ public:
 		GenerateRooms(numberOfRooms);
 		// Generate room doors and connections between them
 		if (numberOfRooms > 0)
-		GenerateRoomConnections(&_map->GetRooms()[0]);
+		{
+			GenerateRoomConnections();
+		}
 		// While, tunnels were generated, all doors were marked as occupied to 
 		// prevent A* start algorithm to build tunnels inside rooms.
 		// That's why, after the room connections generation was finished,
