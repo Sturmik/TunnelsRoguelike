@@ -2,11 +2,11 @@
 
 #pragma region RoomMethods
 
-Point2DInt Room::GetDoorPositionOnPlacement(DoorPlacement doorPlacement)
+Point2DInt Room::GetDoorPositionOnPlacement(PlacementDirection doorPlacement)
 {
 	for (int i = 0; i < _doors.size(); i++)
 	{
-		if (doorPlacement == _doors[i].placement)
+		if (doorPlacement == _doors[i].doorPlacement)
 		{
 			return _doors[i].position;
 		}
@@ -14,16 +14,16 @@ Point2DInt Room::GetDoorPositionOnPlacement(DoorPlacement doorPlacement)
 	Point2DInt result;
 	switch (doorPlacement)
 	{
-	case DoorPlacement::Top:
-	case DoorPlacement::Bottom:
+	case PlacementDirection::Top:
+	case PlacementDirection::Bottom:
 		result = Point2DInt((_leftTopPosition.x + _rightBottomPosition.x) / 2,
-			doorPlacement == DoorPlacement::Top
+			doorPlacement == PlacementDirection::Top
 			? _leftTopPosition.y
 			: _rightBottomPosition.y);
 		break;
-	case DoorPlacement::Right:
-	case DoorPlacement::Left:
-		result = Point2DInt(doorPlacement == DoorPlacement::Left
+	case PlacementDirection::Right:
+	case PlacementDirection::Left:
+		result = Point2DInt(doorPlacement == PlacementDirection::Left
 			? _leftTopPosition.x
 			: _rightBottomPosition.x,
 			(_leftTopPosition.y + _rightBottomPosition.y) / 2);
@@ -34,12 +34,12 @@ Point2DInt Room::GetDoorPositionOnPlacement(DoorPlacement doorPlacement)
 	return result;
 }
 
-bool Room::HasDoorOnPlacement(DoorPlacement doorPlacement)
+bool Room::HasDoorOnPlacement(PlacementDirection doorPlacement)
 {
-	// Check placement, there can only be one door on one side
+	// Check doorPlacement, there can only be one door on one side
 	for (int i = 0; i < _doors.size(); i++)
 	{
-		if (doorPlacement == _doors[i].placement)
+		if (doorPlacement == _doors[i].doorPlacement)
 		{
 			return true;
 		}
@@ -51,11 +51,11 @@ Point2DInt Room::GetClosestDoorPositionToPosition(Point2DInt position)
 {
 	Point2DInt closestPosition;
 	double minDistance;
-	for (int i = DoorPlacement::Top; i <= DoorPlacement::Left; i++)
+	for (int i = PlacementDirection::Top; i <= PlacementDirection::Left; i++)
 	{
-		Point2DInt doorPos = GetDoorPositionOnPlacement(static_cast<DoorPlacement>(i));
+		Point2DInt doorPos = GetDoorPositionOnPlacement(static_cast<PlacementDirection>(i));
 		double distance = doorPos.Distance(position);
-		if (i == DoorPlacement::Top || distance < minDistance)
+		if (i == PlacementDirection::Top || distance < minDistance)
 		{ minDistance = distance; closestPosition = doorPos; }
 	}
 	return closestPosition;
@@ -70,15 +70,15 @@ bool Room::AddDoor(Point2DInt doorPos, Room* connectedTo)
 		// Left door
 		if (doorPos.x == _leftTopPosition.x)
 		{
-			if (!HasDoorOnPlacement(DoorPlacement::Left)) {
-				_doors.push_back(Door(doorPos, DoorPlacement::Left));
+			if (!HasDoorOnPlacement(PlacementDirection::Left)) {
+				_doors.push_back(Door(doorPos, PlacementDirection::Left));
 			}
 		}
 		// Right door
 		if (doorPos.x == _rightBottomPosition.x)
 		{
-			if (!HasDoorOnPlacement(DoorPlacement::Right)) {
-				_doors.push_back(Door(doorPos, DoorPlacement::Right));
+			if (!HasDoorOnPlacement(PlacementDirection::Right)) {
+				_doors.push_back(Door(doorPos, PlacementDirection::Right));
 			}
 		}
 	}
@@ -88,15 +88,15 @@ bool Room::AddDoor(Point2DInt doorPos, Room* connectedTo)
 		// Top wall
 		if (doorPos.y == _leftTopPosition.y)
 		{
-			if (!HasDoorOnPlacement(DoorPlacement::Top)) {
-				_doors.push_back(Door(doorPos, DoorPlacement::Top));
+			if (!HasDoorOnPlacement(PlacementDirection::Top)) {
+				_doors.push_back(Door(doorPos, PlacementDirection::Top));
 			}
 		}
 		// Bottom wall
 		if (doorPos.y == _rightBottomPosition.y)
 		{
-			if (!HasDoorOnPlacement(DoorPlacement::Bottom)) {
-				_doors.push_back(Door(doorPos, DoorPlacement::Bottom));
+			if (!HasDoorOnPlacement(PlacementDirection::Bottom)) {
+				_doors.push_back(Door(doorPos, PlacementDirection::Bottom));
 			}
 		}
 	}
@@ -109,11 +109,11 @@ bool Room::AddDoor(Point2DInt doorPos, Room* connectedTo)
 	return isDoorCreated;
 }
 
-bool Room::RemoveDoor(DoorPlacement doorPlacement)
+bool Room::RemoveDoor(PlacementDirection doorPlacement)
 {
 	for (int i = 0; i < _doors.size(); i++)
 	{
-		if (doorPlacement == _doors[i].placement)
+		if (doorPlacement == _doors[i].doorPlacement)
 		{
 			// Erase door, if found
 			_doors.erase(_doors.begin() + i);
@@ -313,15 +313,18 @@ std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Po
 
 void MapGenerator::ClearMap()
 {
-	// Sets all to default
-	sf::Texture empty;
+	sf::Texture transpText;
+	transpText.loadFromFile("Textures\\Transparent.png");
 	_map->GetRooms().clear();
 	for (int posY = 0; posY < _map->GetMapHeight(); posY++)
 	{
 		for (int posX = 0; posX < _map->GetMapWidth(); posX++)
 		{
+			if (_map->GetMap2D()[posY][posX].GetCellState() != CellState::None)
+			{
+				_map->GetMap2D()[posY][posX].SetTexture(transpText);
+			}
 			_map->GetMap2D()[posY][posX].SetCellState(CellState::None);
-			_map->GetMap2D()[posY][posX].SetTexture(empty);
 		}
 	}
 }
@@ -478,7 +481,6 @@ void MapGenerator::GenerateRooms(int numberOfRooms)
 std::vector<Room*> MapGenerator::GetClosestRoomsToPosition(Point2DInt position, Room& roomToIgnore)
 {
 	// Form vector of closest rooms to the recent one
-	
 	std::map<double, Room*> roomsDistance;
 	std::vector<double> roomsDistanceKeys;
 	// Go through all rooms
@@ -555,10 +557,10 @@ void MapGenerator::GenerateRoomConnections()
 	{
 		Room* roomConnector = &_map->GetRooms()[room];
 		// Go through each potential door (top, right, bottom, left)
-		for (int place = DoorPlacement::Top; place <= DoorPlacement::Left; place++)
+		for (int place = PlacementDirection::Top; place <= PlacementDirection::Left; place++)
 		{
 			// Door position
-			Point2DInt doorPosition = roomConnector->GetDoorPositionOnPlacement(static_cast<DoorPlacement>(place));
+			Point2DInt doorPosition = roomConnector->GetDoorPositionOnPlacement(static_cast<PlacementDirection>(place));
 			// Get closest rooms to our door position
 			std::vector<Room*> closestRooms
 				= GetClosestRoomsToPosition(doorPosition, *roomConnector);

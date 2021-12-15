@@ -13,29 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков\Manager">
+      <UniqueIdentifier>{44267b64-0023-441a-a2e5-bd0f4bebfe7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\MapObjects">
+      <UniqueIdentifier>{c687068f-ffae-44cb-a8c7-71f46751ed0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Manager">
+      <UniqueIdentifier>{f6771ea8-674f-4439-a186-09079eeeec43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\MapObjects">
+      <UniqueIdentifier>{2c92bb7b-c221-4d0d-8d8f-32d4f0464eca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Code\Main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\UtilityTime.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\GameObject.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\WindowManager.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\GameManager.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\MapCell.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\MapGenerator.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\UtilityTime.h">
@@ -44,20 +36,58 @@
     <ClInclude Include="Code\GameObject.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Code\WindowManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\GameManager.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Code\CellObject.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
     </ClInclude>
     <ClInclude Include="Code\MapCell.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\GameManager.h">
+      <Filter>Файлы заголовков\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\InterfaceManager.h">
+      <Filter>Файлы заголовков\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\MapManager.h">
+      <Filter>Файлы заголовков\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\WindowManager.h">
+      <Filter>Файлы заголовков\Manager</Filter>
     </ClInclude>
     <ClInclude Include="Code\MapGenerator.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\MapObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClCompile Include="Code\GameObject.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\UtilityTime.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\CellObject.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\MapCell.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\MapGenerator.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\InterfaceManager.cpp">
+      <Filter>Исходные файлы\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\GameManager.cpp">
+      <Filter>Исходные файлы\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\MapManager.cpp">
+      <Filter>Исходные файлы\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\WindowManager.cpp">
+      <Filter>Исходные файлы\Manager</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

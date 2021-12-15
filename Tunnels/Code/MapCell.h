@@ -19,7 +19,7 @@ private:
 	// Cell state
 	CellState _cellState;
 	// Game object on cell
-	std::vector<GameObject*> _gameObject;
+	GameObject* _gameObject;
 public:
 	// Constructors
 	MapCell() : MapCell(CellState::None) { }
@@ -31,7 +31,8 @@ public:
 	// Gets cell state
 	CellState GetCellState();
 
+	void SetGameObject(GameObject* gameObject) { _gameObject = gameObject; }
 	// Gets game object on cell
-	std::vector<GameObject*>& GetGameObjectVector();
+	GameObject* GetGameObject();
 #pragma endregion
 };

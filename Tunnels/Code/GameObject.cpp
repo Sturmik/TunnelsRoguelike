@@ -3,7 +3,7 @@
 void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	// If object is not active, don't draw it on screen
-	if (!IsObjectActive()) { return; }
+	if (!IsObjectVisible()) { return; }
 	// Apply the entity's transform 
 	states.transform *= getTransform(); // GetTransform() is defined by sf::Transformable
 	// Apply the texture
@@ -24,7 +24,9 @@ GameObject::GameObject()
 	// Set it to member variable
 	_gameObjectVertices = quad;
 	// Set object activity to true
-	_isObjectActive = true;
+	_isObjectVisible = true;
+	// Set object death state to false
+	_isDead = false;
 	// Set default scale to the object
 	setScale(DEFAULT_SCALE_SIZE, DEFAULT_SCALE_SIZE);
 }

@@ -10,19 +10,26 @@
   <Class Name="GameObject" Collapsed="true">
     <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAgAAAAAAAAAAAIAAAIACAAAAaAAAAAAAAAAAAIAAAA=</HashCode>
+      <HashCode>AAwAAAAAAAAAAAIAAAIACAAAAaAAAAAAAAAAAAIAAAA=</HashCode>
       <FileName>Code\GameObject.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MapCell" Collapsed="true">
     <Position X="0.5" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAABAAAAAAAAAABAAAAAAAGAAEAAAAAABAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAGAAEAAAAAAhAAAAAAAA=</HashCode>
       <FileName>Code\MapCell.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Room" Collapsed="true">
     <Position X="4.75" Y="1.5" Width="1.5" />
+    <NestedTypes>
+      <Struct Name="Room::Door" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Code\MapGenerator.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
     <TypeIdentifier>
       <HashCode>gIAgAUAAAAARAQAACBAAAASAAAIAMQAAAAAAAAAAAAA=</HashCode>
       <FileName>Code\MapGenerator.h</FileName>
@@ -37,6 +44,13 @@
   </Class>
   <Class Name="PathFindingAStar" Collapsed="true">
     <Position X="3" Y="1.5" Width="1.5" />
+    <NestedTypes>
+      <Class Name="PathFindingAStar::ANode" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Code\MapGenerator.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAgAAAAAAAAAAEAAIAoAAAAAEAAAAAAAIA=</HashCode>
       <FileName>Code\MapGenerator.h</FileName>

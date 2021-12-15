@@ -9,7 +9,7 @@
 #include <map>
 
 // Placement enum
-enum DoorPlacement
+enum PlacementDirection
 {
 	Top,
 	Right,
@@ -26,13 +26,13 @@ private:
 	{
 		// Door position
 		Point2DInt position;
-		// Door placement
-		DoorPlacement placement;
+		// Door doorPlacement
+		PlacementDirection doorPlacement;
 		// Connected room
 		Room* connectedRoom;
 
-		Door(Point2DInt position, DoorPlacement placement) :
-			position(position), placement(placement), connectedRoom(nullptr) {}
+		Door(Point2DInt position, PlacementDirection doorPlacement) :
+			position(position), doorPlacement(doorPlacement), connectedRoom(nullptr) {}
 	};
 
 	// Room doors
@@ -58,17 +58,17 @@ public:
 	Room(const Room& room) : _doors(room._doors), _leftTopPosition(room._leftTopPosition),
 		_rightBottomPosition(room._rightBottomPosition) {}
 
-	// Gets door position on placement
+	// Gets door position on doorPlacement
 	// If there is no such door exist, return it's potential position
-	Point2DInt GetDoorPositionOnPlacement(DoorPlacement doorPlacement);
-	// Checks, if there is door on specific placement
-	bool HasDoorOnPlacement(DoorPlacement doorPlacement);
+	Point2DInt GetDoorPositionOnPlacement(PlacementDirection doorPlacement);
+	// Checks, if there is door on specific doorPlacement
+	bool HasDoorOnPlacement(PlacementDirection doorPlacement);
 	// Gets closest door to given position
 	Point2DInt GetClosestDoorPositionToPosition(Point2DInt position);
 	// Add new door. Returns true, if operation was successful
 	bool AddDoor(Point2DInt doorPos, Room* connectedTo);
-	// Removes door from specific placement. Returns true, if operation was successful
-	bool RemoveDoor(DoorPlacement doorPlacement);
+	// Removes door from specific doorPlacement. Returns true, if operation was successful
+	bool RemoveDoor(PlacementDirection doorPlacement);
 
 	// Gets doors vector
 	std::vector<Door> GetDoors() { return _doors; }
@@ -364,9 +364,9 @@ public:
 			GenerateRoomConnections();
 		}
 		// While, tunnels were generated, all doors were marked as occupied to 
-		// prevent A* start algorithm to build tunnels inside rooms.
+		// prevent A* start algorithm to build tunnels inside of the rooms.
 		// That's why, after the room connections generation was finished,
-		// update all door cells states to "OPEN"
+		// update all door cells states to "Free"
 		for (int room = 0; room < _map->GetRooms().size(); room++)
 		{
 			for (int door = 0; door < _map->GetRooms()[room].GetDoors().size(); door++)

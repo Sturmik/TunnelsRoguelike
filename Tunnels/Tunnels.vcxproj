@@ -19,24 +19,30 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Code\GameManager.cpp" />
-    <ClCompile Include="Code\GameObject.cpp" />
-    <ClCompile Include="Code\Main.cpp" />
-    <ClCompile Include="Code\MapCell.cpp" />
-    <ClCompile Include="Code\MapGenerator.cpp" />
-    <ClCompile Include="Code\UtilityTime.cpp" />
-    <ClCompile Include="Code\WindowManager.cpp" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Code\CellObject.h" />
     <ClInclude Include="Code\GameManager.h" />
     <ClInclude Include="Code\GameObject.h" />
+    <ClInclude Include="Code\InterfaceManager.h" />
     <ClInclude Include="Code\MapCell.h" />
     <ClInclude Include="Code\MapGenerator.h" />
+    <ClInclude Include="Code\MapManager.h" />
     <ClInclude Include="Code\UtilityTime.h" />
     <ClInclude Include="Code\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClCompile Include="Code\CellObject.cpp" />
+    <ClCompile Include="Code\GameManager.cpp" />
+    <ClCompile Include="Code\GameObject.cpp" />
+    <ClCompile Include="Code\InterfaceManager.cpp" />
+    <ClCompile Include="Code\Main.cpp" />
+    <ClCompile Include="Code\MapCell.cpp" />
+    <ClCompile Include="Code\MapGenerator.cpp" />
+    <ClCompile Include="Code\MapManager.cpp" />
+    <ClCompile Include="Code\UtilityTime.cpp" />
+    <ClCompile Include="Code\WindowManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

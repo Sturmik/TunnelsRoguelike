@@ -28,7 +28,9 @@ private:
 	// Game object texture
 	sf::Texture _gameObjectTexture;
 	// Is object active, will it be drawn on the screen
-	bool _isObjectActive;
+	bool _isObjectVisible;
+	// If object is dead, it will be deleted in next cycle of the programm
+	bool _isDead;
 
 	// Allows to draw your own entinity
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -36,10 +38,16 @@ public:
 	// Default constructor
 	GameObject();
 
-	// Return object activity state
-	bool IsObjectActive() const { return _isObjectActive; }
-	// Sets object activity
-	void SetObjectActivity(bool activity) { _isObjectActive = activity; }
+	// Updates game object 
+	virtual void Update() {}
+	// Return object visibility state
+	bool IsObjectVisible() const { return _isObjectVisible; }
+	// Sets object visibility
+	void SetObjectVisibility(bool activity) { _isObjectVisible = activity; }
+	// Return object state
+	bool IsObjectDead() const { return _isDead; }
+	// Sets object state
+	void SetObjectDeathState(bool isDead) { _isDead = isDead; }
 	// Set texture for gameobject
 	void SetTexture(sf::Texture texture);
 };
