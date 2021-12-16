@@ -195,6 +195,23 @@ bool Room::HasWayToRoom(Room& destinationRoom)
 	return HasWayToRoom(destinationRoom, visitedRooms);
 }
 
+bool Map::TryMoveCellObject(Point2DInt startPos, Point2DInt targetPoint, MapCell*& mapCellOnTargetPos)
+{
+	// Set map cell object to null
+	mapCellOnTargetPos = nullptr;
+	// Check, if object tries to get out of map boundaries
+	if (targetPoint.x < 0 || targetPoint.x > GetMapWidth()
+		|| targetPoint.y < 0 || targetPoint.y > GetMapHeight())
+	{
+		// Return false
+		return false;
+	}
+	// Update map cell object
+	mapCellOnTargetPos = &GetMap2D()[targetPoint.y][targetPoint.x];
+	// Check, if there it possible to get to that position
+	return mapCellOnTargetPos->GetCellState() == CellState::Free;
+}
+
 #pragma endregion
 
 #pragma region ANavigation
@@ -211,6 +228,61 @@ bool PathFindingAStar::IsCellPassable(std::vector<CellState>& passableCells, Poi
 		}
 	}
 	return isPassable;
+}
+
+void PathFindingAStar::FormNodeMap(Point2DInt startPoint, Point2DInt endPoint, std::vector<CellState>& passableCells)
+{
+	// Edit every node according to given data
+	for (int row = 0; row < _map->GetMapHeight(); row++)
+	{
+		for (int col = 0; col < _map->GetMapWidth(); col++)
+		{
+			// Set node to default values
+			_aNodeMap[row][col].SetNodeToDefaultValues();
+			// Setting position
+			_aNodeMap[row][col].SetArrayPosition(Point2DInt(col, row));
+			// Setting distances
+			_aNodeMap[row][col].SetDistanceToTheEndPoint(endPoint.Distance(Point2DInt(col, row)));
+			// Setting neighbours
+			if (IsCellPassable(passableCells, Point2DInt(col, row)))
+			{
+				if (_aNodeMap[row][col].GetNeighbours().size() == 0)
+				{
+					// Add north neighbour
+					if (row > 0)
+					{
+						_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row - 1][col]);
+					}
+					// Add south neighbour
+					if (row < _map->GetMapHeight() - 1)
+					{
+						_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row + 1][col]);
+					}
+					// Add west neighbour
+					if (col > 0)
+					{
+						_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row][col - 1]);
+					}
+					// Add east neighbour
+					if (col < _map->GetMapWidth() - 1)
+					{
+						_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row][col + 1]);
+					}
+				}
+			}
+			else
+			{
+				// Mark cell as obstacle
+				_aNodeMap[row][col].SetObstacleState(true);
+			}
+			// If, we are at the start point 
+			if (row == startPoint.y && col == startPoint.x)
+			{
+				// Set its local distance to zero
+				_aNodeMap[row][col].SetLocalDistance(0);
+			}
+		}
+	}
 }
 
 std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Point2DInt endPoint,
@@ -296,11 +368,11 @@ std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Po
 		while (nodeForPathGenerating->GetParent() != nullptr)
 		{
 			// Push position of node
-			path.push_back(nodeForPathGenerating->GetPosition());
+			path.push_back(nodeForPathGenerating->GetArrayPosition());
 			// Change node to parent
 			nodeForPathGenerating = nodeForPathGenerating->GetParent();
 		}
-		path.push_back(nodeForPathGenerating->GetPosition());
+		path.push_back(nodeForPathGenerating->GetArrayPosition());
 	}
 	// Return path
 	return path;
@@ -313,18 +385,15 @@ std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Po
 
 void MapGenerator::ClearMap()
 {
-	sf::Texture transpText;
-	transpText.loadFromFile("Textures\\Transparent.png");
 	_map->GetRooms().clear();
 	for (int posY = 0; posY < _map->GetMapHeight(); posY++)
 	{
 		for (int posX = 0; posX < _map->GetMapWidth(); posX++)
 		{
-			if (_map->GetMap2D()[posY][posX].GetCellState() != CellState::None)
-			{
-				_map->GetMap2D()[posY][posX].SetTexture(transpText);
-			}
+			// Set cell state to none
 			_map->GetMap2D()[posY][posX].SetCellState(CellState::None);
+			// Setting object to invisible state, so we won't draw unused parts of the map
+			_map->GetMap2D()[posY][posX].SetObjectVisibility(false);
 		}
 	}
 }
@@ -336,7 +405,7 @@ bool MapGenerator::AddRoom(Room newRoom)
 	// Add room
 	_map->GetRooms().push_back(newRoom);
 	// Draw this room
-		// Getting position of room points
+	// Getting position of room points
 	Point2DInt topLeft = newRoom.GetLeftTopPosition();
 	Point2DInt bottomRight = newRoom.GetRightBottomPosition();
 	// Drawing room
@@ -356,8 +425,8 @@ bool MapGenerator::AddRoom(Room newRoom)
 			if (posY == topLeft.y || posY == bottomRight.y
 				|| posX == topLeft.x || posX == bottomRight.x)
 			{
-				// Set cell state to occupied
-				_map->GetMap2D()[posY][posX].SetCellState(CellState::Occupied);
+				// Set cell state to uncreachable
+				_map->GetMap2D()[posY][posX].SetCellState(CellState::Unreachable);
 				// Set wall texture
 				_map->GetMap2D()[posY][posX].SetTexture(_wallTexture);
 			}
@@ -601,6 +670,45 @@ void MapGenerator::GenerateRoomConnections()
 					break;
 				}
 			}
+		}
+	}
+}
+
+void MapGenerator::GenerateMap(int numberOfRooms)
+{
+	// Clear all map
+	ClearMap();
+	// Generate rooms
+	GenerateRooms(numberOfRooms);
+	// Generate room doors and connections between them
+	if (numberOfRooms > 0)
+	{
+		GenerateRoomConnections();
+	}
+	// Setting all not "None" objects to visible state
+	for (int y = 0; y < _map->GetMapHeight(); y++)
+	{
+		for (int x = 0; x < _map->GetMapWidth(); x++)
+		{
+			if (_map->GetMap2D()[y][x].GetCellState() != CellState::None)
+			{
+				_map->GetMap2D()[y][x].SetObjectVisibility(true);
+			}
+		}
+	}
+	// While, tunnels were generated, all doors were marked as occupied to 
+	// prevent A* start algorithm to build tunnels inside of the rooms.
+	// That's why, after the room connections generation was finished,
+	// update all door cells states to "Free"
+	for (int room = 0; room < _map->GetRooms().size(); room++)
+	{
+		// Set all doors to free state
+		for (int door = 0; door < _map->GetRooms()[room].GetDoors().size(); door++)
+		{
+			// Get door position
+			Point2DInt doorPos = _map->GetRooms()[room].GetDoors()[door].position;
+			// Update cell state to free
+			_map->GetMap2D()[doorPos.y][doorPos.x].SetCellState(CellState::Free);
 		}
 	}
 }

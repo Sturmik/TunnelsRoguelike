@@ -22,25 +22,36 @@
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Code\Armor.h" />
+    <ClInclude Include="Code\BaseCharacter.h" />
     <ClInclude Include="Code\CellObject.h" />
     <ClInclude Include="Code\GameManager.h" />
     <ClInclude Include="Code\GameObject.h" />
+    <ClInclude Include="Code\Gold.h" />
+    <ClInclude Include="Code\InteractiveObject.h" />
     <ClInclude Include="Code\InterfaceManager.h" />
+    <ClInclude Include="Code\Item.h" />
     <ClInclude Include="Code\MapCell.h" />
     <ClInclude Include="Code\MapGenerator.h" />
     <ClInclude Include="Code\MapManager.h" />
+    <ClInclude Include="Code\PlayerCharacter.h" />
+    <ClInclude Include="Code\PotionHolder.h" />
+    <ClInclude Include="Code\Trigger.h" />
     <ClInclude Include="Code\UtilityTime.h" />
+    <ClInclude Include="Code\WeaponHolder.h" />
     <ClInclude Include="Code\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Code\BaseCharacter.cpp" />
     <ClCompile Include="Code\CellObject.cpp" />
     <ClCompile Include="Code\GameManager.cpp" />
     <ClCompile Include="Code\GameObject.cpp" />
+    <ClCompile Include="Code\InteractiveObject.cpp" />
     <ClCompile Include="Code\InterfaceManager.cpp" />
     <ClCompile Include="Code\Main.cpp" />
-    <ClCompile Include="Code\MapCell.cpp" />
     <ClCompile Include="Code\MapGenerator.cpp" />
     <ClCompile Include="Code\MapManager.cpp" />
+    <ClCompile Include="Code\PlayerCharacter.cpp" />
     <ClCompile Include="Code\UtilityTime.cpp" />
     <ClCompile Include="Code\WindowManager.cpp" />
   </ItemGroup>

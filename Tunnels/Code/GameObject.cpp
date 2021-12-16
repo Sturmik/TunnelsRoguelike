@@ -40,3 +40,13 @@ void GameObject::SetTexture(sf::Texture texture)
 	_gameObjectVertices[1].texCoords = sf::Vector2f(texture.getSize().x, texture.getSize().y);
 	_gameObjectVertices[0].texCoords = sf::Vector2f(0.f, texture.getSize().y);
 }
+
+void GameObject::SetTexture(std::string texturePath)
+{
+	_gameObjectTexture.loadFromFile(texturePath);
+	// Define texture area for gameobject
+	_gameObjectVertices[3].texCoords = sf::Vector2f(0.f, 0.f);
+	_gameObjectVertices[2].texCoords = sf::Vector2f(_gameObjectTexture.getSize().x, 0.f);
+	_gameObjectVertices[1].texCoords = sf::Vector2f(_gameObjectTexture.getSize().x, _gameObjectTexture.getSize().y);
+	_gameObjectVertices[0].texCoords = sf::Vector2f(0.f, _gameObjectTexture.getSize().y);
+}

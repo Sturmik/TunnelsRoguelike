@@ -35,6 +35,7 @@ void WindowManager::Update()
     // Draw all objects
     for (int layer = Layer::BackLayer; layer <= Layer::InterfaceLayer; layer++)
     {
+        std::list<sf::Drawable*>::iterator lastObject = _gameObjectsLayers[static_cast<Layer>(layer)].begin();
         for (std::list<sf::Drawable*>::iterator object = _gameObjectsLayers[static_cast<Layer>(layer)].begin();
             object != _gameObjectsLayers[static_cast<Layer>(layer)].end(); object++)
         {
@@ -47,8 +48,14 @@ void WindowManager::Update()
             {
                 gmObj->Update();
                 // Check, if object is dead remove it from game objects map
-                if (gmObj->IsObjectDead()) { RemoveObject(gmObj); }
+                if (gmObj->IsObjectDead()) 
+                {
+                    RemoveObject(gmObj);
+                    // After we remove object - update iterator
+                    object = _gameObjectsLayers[static_cast<Layer>(layer)].begin();
+                }
             }
+            lastObject = object;
         }
     }
     // Display everything on window
@@ -79,7 +86,7 @@ void WindowManager::RemoveObject(sf::Drawable* objectToRemove)
             if (*object == objectToRemove)
             {
                 _gameObjectsLayers[objectLayer].erase(object);
-                continue;
+                return;
             }
         }
     }

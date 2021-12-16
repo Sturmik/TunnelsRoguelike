@@ -43,11 +43,13 @@ public:
 	// Return object visibility state
 	bool IsObjectVisible() const { return _isObjectVisible; }
 	// Sets object visibility
-	void SetObjectVisibility(bool activity) { _isObjectVisible = activity; }
+	void SetObjectVisibility(bool isVisible) { _isObjectVisible = isVisible; }
 	// Return object state
 	bool IsObjectDead() const { return _isDead; }
 	// Sets object state
 	void SetObjectDeathState(bool isDead) { _isDead = isDead; }
 	// Set texture for gameobject
 	void SetTexture(sf::Texture texture);
+	// Sets texture from path
+	void SetTexture(std::string texturePath);
 };

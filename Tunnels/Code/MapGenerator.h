@@ -128,6 +128,14 @@ public:
 		if (_mapWidth < 0) { _mapWidth = 0; }
 		if (_mapHeight < 0) { _mapHeight = 0; }
 		_map = CreateArr2D(_map, _mapHeight, _mapWidth);
+		// Update position of each element
+		for (int posY = 0; posY < mapHeight; posY++)
+		{
+			for (int posX = 0; posX < mapWidth; posX++)
+			{
+				_map[posY][posX].SetArrayPosition(Point2DInt(posX, posY));
+			}
+		}
 	}
 	// Deconstructor
 	~Map()
@@ -145,6 +153,12 @@ public:
 	int GetMapWidth() { return _mapWidth; }
 	// Get map height
 	int GetMapHeight() { return _mapHeight; }
+
+	// Function for moving, it checks if it possible to move on given position
+// Returns false - it is not possible to be reached or taken by another game object
+// Returns true - mapcell is reachable and free to go
+// MapCell object equals nullptr in cases, when it is not possible to reach position at all
+	bool TryMoveCellObject(Point2DInt startPos, Point2DInt targetPoint, MapCell*& mapCellOnTargetPos);
 };
 
 // Double max value
@@ -174,7 +188,7 @@ private:
 	public:
 		// Getters
 
-		Point2DInt GetPosition() const { return _position; }
+		Point2DInt GetArrayPosition() const { return _position; }
 		ANode* GetParent() const { return _parent; }
 		std::vector<ANode*>& GetNeighbours() { return _neighbours; }
 		bool IsObstacle() const { return _isObstacle; }
@@ -189,7 +203,7 @@ private:
 
 		// Setters
 
-		void SetPosition(Point2DInt position) { _position = position; }
+		void SetArrayPosition(Point2DInt position) { _position = position; }
 		void SetParent(ANode* parent) { _parent = parent; }
 		void SetObstacleState(bool isObstacle) { _isObstacle = isObstacle; }
 		void SetOpenState(bool openState) { _isOpen = openState; }
@@ -220,60 +234,7 @@ private:
 
 	// Forming 2D array of nodes
 	void FormNodeMap(Point2DInt startPoint, Point2DInt endPoint,
-		std::vector<CellState>& passableCells)
-	{
-		// Edit every node according to given data
-		for (int row = 0; row < _map->GetMapHeight(); row++)
-		{
-			for (int col = 0; col < _map->GetMapWidth(); col++)
-			{
-				// Set node to default values
-				_aNodeMap[row][col].SetNodeToDefaultValues();
-				// Setting position
-				_aNodeMap[row][col].SetPosition(Point2DInt(col, row));
-				// Setting distances
-				_aNodeMap[row][col].SetDistanceToTheEndPoint(endPoint.Distance(Point2DInt(col, row)));
-				// Setting neighbours
-				if (IsCellPassable(passableCells, Point2DInt(col, row)))
-				{
-					if (_aNodeMap[row][col].GetNeighbours().size() == 0)
-					{
-						// Add north neighbour
-						if (row > 0)
-						{
-							_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row - 1][col]);
-						}
-						// Add south neighbour
-						if (row < _map->GetMapHeight() - 1)
-						{
-							_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row + 1][col]);
-						}
-						// Add west neighbour
-						if (col > 0)
-						{
-							_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row][col - 1]);
-						}
-						// Add east neighbour
-						if (col < _map->GetMapWidth() - 1)
-						{
-							_aNodeMap[row][col].GetNeighbours().push_back(&_aNodeMap[row][col + 1]);
-						}
-					}
-				}
-				else
-				{
-					// Mark cell as obstacle
-					_aNodeMap[row][col].SetObstacleState(true);
-				}
-				// If, we are at the start point 
-				if (row == startPoint.y && col == startPoint.x)
-				{
-					// Set its local distance to zero
-					_aNodeMap[row][col].SetLocalDistance(0);
-				}
-			}
-		}
-	}
+		std::vector<CellState>& passableCells);
 public:
 	PathFindingAStar(Map* map) : _map(map)
 	{
@@ -320,7 +281,7 @@ private:
 	void GenerateRooms(int numberOfRooms);
 	// Gets vector of closest rooms towards specific room
 	std::vector<Room*> GetClosestRoomsToPosition(Point2DInt position, Room& roomToIgnore);
-	// Generate Tunnel between two points, using wave algorithm
+	// Generate Tunnel between two points, using A* algorithm
 	void GenerateTunnel(Room* startRoom, Point2DInt startPoint, Room* endRoom, Point2DInt endPoint);
 	// Generate room doors
 	void GenerateRoomConnections();
@@ -346,36 +307,12 @@ public:
 		}
 	}
 
+	// Deconstructor
 	~MapGenerator()
 	{
 		delete _pathFinding;
 	}
 
 	// Generates map
-	void GenerateMap(int numberOfRooms)
-	{
-		// Clear all map
-		ClearMap();
-		// Generate rooms
-		GenerateRooms(numberOfRooms);
-		// Generate room doors and connections between them
-		if (numberOfRooms > 0)
-		{
-			GenerateRoomConnections();
-		}
-		// While, tunnels were generated, all doors were marked as occupied to 
-		// prevent A* start algorithm to build tunnels inside of the rooms.
-		// That's why, after the room connections generation was finished,
-		// update all door cells states to "Free"
-		for (int room = 0; room < _map->GetRooms().size(); room++)
-		{
-			for (int door = 0; door < _map->GetRooms()[room].GetDoors().size(); door++)
-			{
-				// Get door position
-				Point2DInt doorPos = _map->GetRooms()[room].GetDoors()[door].position;
-				// Update cell state to free
-				_map->GetMap2D()[doorPos.y][doorPos.x].SetCellState(CellState::Free);
-			}
-		}
-	}
+	void GenerateMap(int numberOfRooms);
 };

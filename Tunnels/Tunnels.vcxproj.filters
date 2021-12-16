@@ -57,6 +57,33 @@
     <ClInclude Include="Code\MapGenerator.h">
       <Filter>Файлы заголовков\MapObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Code\InteractiveObject.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Trigger.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Item.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Armor.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\WeaponHolder.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Gold.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\PotionHolder.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\BaseCharacter.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\PlayerCharacter.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\GameObject.cpp">
@@ -69,9 +96,6 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Code\CellObject.cpp">
-      <Filter>Исходные файлы\MapObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\MapCell.cpp">
       <Filter>Исходные файлы\MapObjects</Filter>
     </ClCompile>
     <ClCompile Include="Code\MapGenerator.cpp">
@@ -88,6 +112,15 @@
     </ClCompile>
     <ClCompile Include="Code\WindowManager.cpp">
       <Filter>Исходные файлы\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\InteractiveObject.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\BaseCharacter.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\PlayerCharacter.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
