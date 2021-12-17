@@ -1,33 +1,32 @@
 #pragma once
 
-#include "MapGenerator.h"
+#include "Map.h"
 
- // Basic class for all cell objects
+ // Abstract class for all cell objects
  // Used for movement and setting position
 class CellObject : public GameObject
 {
+private:
+	// Sets new object position in map manager
+	void SetNewPosition(Point2DInt newPos);
 protected:
 	// Map manager is used for object movement and navigation
 	Map* _map;
 	// Map cell in which holds the object
 	MapCell* _mapCell;
-
-	// Sets new object position in map manager
-	void SetNewPosition(Point2DInt newPos);
-public:
 	// Cell object constructor
 	CellObject(Map* map, MapCell* mapCell) :
 		_map(map), _mapCell(mapCell)
 	{
 		if (_mapCell == nullptr) { return; }
-		// Set position of the object to its map cell
-		_mapCell->setPosition(_mapCell->getPosition());
-		// Update map cell game object
-		_mapCell->SetGameObject(this);
-		// By default cell object sets cell state to occupied
-		_mapCell->SetCellState(CellState::Occupied);
+		// Update position
+		SetNewPosition(mapCell->GetArrayPosition());
 	}
 
+	// Methods is called after position change,
+	// Can be overriden for defining object behaviour
+	virtual void OnPositionChange() {};
+public:
 	// Deconstructor
 	~CellObject()
 	{

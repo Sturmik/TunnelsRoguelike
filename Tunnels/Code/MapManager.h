@@ -13,7 +13,7 @@
 // - Map/Object generation
 // - Object moving
 // - Player object control
-class MapManager : EventListener
+class MapManager : WindowEventListener
 {
 private:
 	bool inputTop = false;
@@ -81,6 +81,6 @@ public:
 	// Get map
 	Map& GetMap() { return _map; }
 
-	// For window event processing
-	virtual void EventProcess(sf::Event windowEvent) override;
+	// Window event processing
+	virtual void WindowEventProcess(sf::RenderWindow& window, sf::Event windowEvent) override;
 };

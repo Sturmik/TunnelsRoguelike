@@ -27,8 +27,6 @@ void BaseCharacter::ItemInteraction(Item* itemObj)
 {
 	// Get item out of its map cell
 	itemObj->RemoveFromMapCell();
-	// Mark object as "Dead", because now it will only appear in our inventory
-	itemObj->SetObjectDeathState(true);
 	// Log about this
 	std::cout  << _objectName << " picked up a " << itemObj->GetObjectName() << std::endl;
 	// Get armor
@@ -112,8 +110,8 @@ int BaseCharacter::UseRecentWeapon()
 	// Go through all weapons, and delete weapons, which are broken
 	while (_weaponQueue.front()->GetWeapon().GetDurability() == 0)
 	{
-		// Delete weapon
-		delete _weaponQueue.front();
+		// Set this item to dead state
+		_weaponQueue.front()->SetObjectDeathState(true);
 		// Remove it from front
 		_weaponQueue.pop();
 	}
@@ -132,8 +130,8 @@ bool BaseCharacter::UseRecentHealPotion()
 	// Go through all potions, and delete potions, which are consumed
 	while (_healPotionStack.top()->GetPotion().CheckPoints() == 0)
 	{
-		// Delete potion
-		delete _healPotionStack.top();
+		// Set this item to dead state
+		_healPotionStack.top()->SetObjectDeathState(true);
 		// Remove it from front
 		_healPotionStack.pop();
 	}
@@ -155,8 +153,8 @@ bool BaseCharacter::UseRecentTurnPotion()
 	// Go through all potions, and delete potions, which are consumed
 	while (_turnPotionsStack.top()->GetPotion().CheckPoints() == 0)
 	{
-		// Delete potion
-		delete _turnPotionsStack.top();
+		// Set this item to dead state
+		_turnPotionsStack.top()->SetObjectDeathState(true);
 		// Remove it from front
 		_turnPotionsStack.pop();
 	}
@@ -173,9 +171,10 @@ bool BaseCharacter::UseRecentTurnPotion()
 
 void BaseCharacter::Interact(InteractiveObject* interactObj)
 {
+	// It is not interactive object - do nothing
+	if (interactObj == nullptr) { return; }
 	// Decrease turn points
 	_recentTurnPoints--;
-	if (interactObj == nullptr) { return; }
 	switch (interactObj->GetObjectType())
 	{
 		// Character interaction

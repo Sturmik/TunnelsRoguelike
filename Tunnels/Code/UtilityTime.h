@@ -18,5 +18,5 @@ public:
     // Gets delta time as sf::Time
     static sf::Time GetDeltaTimeAsSfTime();
     // Gets deltat time as float value
-    static float GetDeltaTime();
+    static float GetDeltaTimeFloat();
 };

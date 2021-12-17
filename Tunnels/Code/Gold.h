@@ -12,5 +12,10 @@ public:
 	Gold(Map* map, MapCell* mapCell, int gold)
 		: Item(map, mapCell, "Gold"), _gold(gold) { }
 
-	int GetGold() override { return _gold; }
+	int GetGold() override 
+	{
+		// After gold was picked up, set this item to dead state
+		SetObjectDeathState(true);
+		return _gold;
+	}
 };

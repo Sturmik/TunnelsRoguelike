@@ -3,9 +3,24 @@
 #include "BaseCharacter.h"
 
 // Player character, which is controlled by user
+// If player reaches new room or cell, he sets its visibility state to true
 class PlayerCharacter : public BaseCharacter
 {
 protected:
+	// Override on position change method to update visibility state of map cells
+	void OnPositionChange() override
+	{
+		// Player is always visible
+		_mapCell->SetMapCellVisibility(true);
+		// Make cells around visibile
+		_map->SetRectangleVisibility(Point2DInt(_mapCell->GetArrayPosition().x - 1, _mapCell->GetArrayPosition().y - 1),
+			Point2DInt(_mapCell->GetArrayPosition().x + 1, _mapCell->GetArrayPosition().y + 1), true);
+		// Check, if player is inside of the room
+		Room* room = _map->GetRoomByPosition(_mapCell->GetArrayPosition());
+		// If so, make it visible
+		_map->SetRoomVisibility(room, true);
+	};
+
 	// Character interaction
 	virtual void CharacterInteraction(BaseCharacter* charObj) override
 	{
@@ -27,7 +42,6 @@ protected:
 			ladder->Invoke();
 		}
 	}
-
 public:
 	PlayerCharacter(Map* map,
 		MapCell* mapCell, std::string name, int maxWalkPoints, int health,

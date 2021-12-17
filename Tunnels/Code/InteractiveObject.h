@@ -18,7 +18,7 @@ enum class ObjectType
 	TriggerObject
 };
 
-// Interactive object is a base class for all 
+// Interactive object is an abstract class for all 
 // objects which are involved in any kind of communication
 class InteractiveObject : public CellObject
 {

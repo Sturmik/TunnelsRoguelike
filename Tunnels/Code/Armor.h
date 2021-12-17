@@ -15,5 +15,10 @@ public:
 		SetTexture("Textures\\Armor.png");
 	}
 
-	int GetArmor() override { return  _armor; }
+	int GetArmor() override 
+	{ 
+		// After armor was picked up, set this item to dead state
+		SetObjectDeathState(true);
+		return  _armor; 
+	}
 };

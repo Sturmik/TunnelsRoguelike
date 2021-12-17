@@ -37,6 +37,17 @@ public:
 	MapCell(Point2DInt mapCell2DPosition, CellState cellState)
 		: _mapCell2DPosition(mapCell2DPosition), _gameObject(nullptr), _cellState(cellState) {}
 
+	// Sets map cell and object visibility 
+	void SetMapCellVisibility(bool isVisible)
+	{
+		// Update map cell visibility
+		SetObjectVisibility(isVisible);
+		// If cell state is "None" don't update it's visibility
+		if (_cellState == CellState::None) { return; }
+		// Update game object visibility
+		if (_gameObject != nullptr) { _gameObject->SetObjectVisibility(isVisible); }
+	}
+
 	// Sets map cell position in array
 	void SetArrayPosition(Point2DInt mapCellPosition) { _mapCell2DPosition = mapCellPosition; }
 	// Gets map cell position in array

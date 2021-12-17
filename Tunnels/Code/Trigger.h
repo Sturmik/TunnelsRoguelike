@@ -20,13 +20,16 @@ public:
 // Ladder 
 class Ladder : public Trigger
 {
-public:
-	Ladder(Map* map, MapCell* mapCell)
-		: Trigger(map, mapCell, "Ladder")
+protected:
+	void OnPositionChange() override
 	{
 		// Update cell state to invocable
 		_mapCell->SetCellState(CellState::Invocable);
-	}
+	};
+public:
+	Ladder(Map* map, MapCell* mapCell)
+		: Trigger(map, mapCell, "Ladder")
+	{}
 
 	// Invokes next level
 	void Invoke() override { /*call nextLevel*/ }

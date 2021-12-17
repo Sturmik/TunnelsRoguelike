@@ -84,6 +84,15 @@
     <ClInclude Include="Code\PlayerCharacter.h">
       <Filter>Файлы заголовков\MapObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Code\EventListener.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Map.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\PathFindingAStar.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\GameObject.cpp">
@@ -120,6 +129,12 @@
       <Filter>Исходные файлы\MapObjects</Filter>
     </ClCompile>
     <ClCompile Include="Code\PlayerCharacter.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Map.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\PathFindingAStar.cpp">
       <Filter>Исходные файлы\MapObjects</Filter>
     </ClCompile>
   </ItemGroup>

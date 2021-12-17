@@ -15,20 +15,30 @@ WindowManager::~WindowManager()
 
 void WindowManager::Update()
 {
+    // Start timer
+    UtilityTime::FrameStartTime();
+    // Process events
     sf::Event windowEvent;
     while (_window.pollEvent(windowEvent))
     {
-        // Send message to all event listeners
-        for (std::list<EventListener*>::iterator listener = _eventListeners.begin();
-            listener != _eventListeners.end(); listener++)
-        {
-            (**listener).EventProcess(windowEvent);
-        }
         if (windowEvent.type == sf::Event::Resized)
         {
             sf::FloatRect visibleArea(0, 0, windowEvent.size.width, windowEvent.size.height);
             _window.setView(sf::View(visibleArea));
         }
+        // Send message to all event listeners
+        for (std::list<WindowEventListener*>::iterator listener = _eventListeners.begin();
+            listener != _eventListeners.end(); listener++)
+        {
+            (**listener).WindowEventProcess(_window, windowEvent);
+        }
+    }
+    windowEvent.type = sf::Event::EventType(-1);
+    // Send message to all event listeners (without event)
+    for (std::list<WindowEventListener*>::iterator listener = _eventListeners.begin();
+        listener != _eventListeners.end(); listener++)
+    {
+        (**listener).WindowEventProcess(_window, windowEvent);
     }
     // Clear window
     _window.clear();
@@ -92,12 +102,12 @@ void WindowManager::RemoveObject(sf::Drawable* objectToRemove)
     }
 }
 
-void WindowManager::AddEventListener(EventListener* eventListener)
+void WindowManager::AddEventListener(WindowEventListener* eventListener)
 {
     _eventListeners.push_back(eventListener);
 }
 
-void WindowManager::RemoveListener(EventListener* eventListener)
+void WindowManager::RemoveListener(WindowEventListener* eventListener)
 {
     _eventListeners.remove(eventListener);
 }

@@ -10,7 +10,7 @@ sf::Time UtilityTime::GetDeltaTimeAsSfTime()
     return _setTime;
 }
 
-float UtilityTime::GetDeltaTime()
+float UtilityTime::GetDeltaTimeFloat()
 {
     return _setTime.asSeconds();
 }

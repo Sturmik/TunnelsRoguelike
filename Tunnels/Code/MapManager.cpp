@@ -29,9 +29,15 @@ void MapManager::GenerateMap(int numberOfRooms)
 		_map.GetRooms()[4].GetRightBottomPosition().y - 1));
 }
 
-void MapManager::EventProcess(sf::Event windowEvent)
+void MapManager::WindowEventProcess(sf::RenderWindow& window, sf::Event windowEvent)
 {
 	MapCell* targetMapCell = nullptr;
+	// Update view on player
+	sf::View view = window.getView();
+	view.move((_playerCharacter->getPosition().x - view.getCenter().x) * UtilityTime::GetDeltaTimeFloat(),
+		(_playerCharacter->getPosition().y - view.getCenter().y) * UtilityTime::GetDeltaTimeFloat());
+	window.setView(view);
+	// Process events
 	switch (windowEvent.type)
 	{
 		// Movement input check
@@ -44,14 +50,14 @@ void MapManager::EventProcess(sf::Event windowEvent)
 		{
 			_playerCharacter->MoveCellObject(PlacementDirection::Bottom, targetMapCell);
 		}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			{
-				_playerCharacter->MoveCellObject(PlacementDirection::Left, targetMapCell);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-			{
-				_playerCharacter->MoveCellObject(PlacementDirection::Right, targetMapCell);
-			}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			_playerCharacter->MoveCellObject(PlacementDirection::Left, targetMapCell);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			_playerCharacter->MoveCellObject(PlacementDirection::Right, targetMapCell);
+		}
 	default:
 		break;
 	}

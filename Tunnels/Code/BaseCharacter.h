@@ -1,13 +1,12 @@
 #pragma once
 
-// Include needed header files
 #include "Trigger.h"
 #include "Gold.h"
 #include "Armor.h"
 #include "WeaponHolder.h"
 #include "WeaponHolder.h"
 #include "PotionHolder.h"
-// Include libraries
+
 #include <queue>
 #include <stack>
 #include <string>

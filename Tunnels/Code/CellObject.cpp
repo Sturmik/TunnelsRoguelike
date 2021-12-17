@@ -2,14 +2,17 @@
 
 void CellObject::SetNewPosition(Point2DInt newPos)
 {
+	// New position
 	if (_mapCell == nullptr)
 	{
-		// Set object in cell
+		// Set object in cell by default to occupied
 		_map->GetMap2D()[newPos.y][newPos.x].SetCellState(CellState::Occupied);
 		_map->GetMap2D()[newPos.y][newPos.x].SetGameObject(this);
 	}
+	// Change of position
 	else
 	{
+		CellState pastCellState = _map->GetMap2D()[newPos.y][newPos.x].GetCellState();
 		// MoveCellObject to new position
 		_map->GetMap2D()[newPos.y][newPos.x].SetCellState(_mapCell->GetCellState());
 		_map->GetMap2D()[newPos.y][newPos.x].SetGameObject(this);
@@ -17,11 +20,14 @@ void CellObject::SetNewPosition(Point2DInt newPos)
 		_mapCell->SetCellState(CellState::Free);
 		_mapCell->SetGameObject(nullptr);
 	}
-	// Update map cell and object position
+	// Update map cell
 	_mapCell = &_map->GetMap2D()[newPos.y][newPos.x];
+	// Update object position
 	setPosition(_mapCell->getPosition());
 	// Make object visible
-	SetObjectVisibility(true);
+	SetObjectVisibility(_mapCell->IsObjectVisible());
+	// Call on position change method for specific changes
+	OnPositionChange();
 }
 
 bool CellObject::MoveCellObject(PlacementDirection moveDirection, MapCell*& targetMapCell)
