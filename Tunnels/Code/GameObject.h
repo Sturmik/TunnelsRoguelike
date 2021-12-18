@@ -30,7 +30,7 @@ private:
 	// Is object active, will it be drawn on the screen
 	bool _isObjectVisible;
 	// If object is dead, it will be deleted in next cycle of the programm
-	bool _isDead;
+	bool _isObjectDead;
 
 	// Allows to draw your own entinity
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -45,9 +45,9 @@ public:
 	// Sets object visibility
 	void SetObjectVisibility(bool isVisible) { _isObjectVisible = isVisible; }
 	// Return object state
-	bool IsObjectDead() const { return _isDead; }
+	bool IsObjectDead() const { return _isObjectDead; }
 	// Sets object state
-	void SetObjectDeathState(bool isDead) { _isDead = isDead; }
+	void SetObjectDeathState(bool isDead) { _isObjectDead = isDead; }
 	// Set texture for gameobject
 	void SetTexture(sf::Texture texture);
 	// Sets texture from path

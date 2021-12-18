@@ -16,13 +16,6 @@ protected:
 		std::string itemName) : InteractiveObject(map, mapCell, itemName)
 	{ }
 public:
-	// Removes item from cell and makes it invisible
-	void RemoveFromMapCell() override 
-	{
-		_mapCell->SetCellState(CellState::Free);
-		_mapCell->SetGameObject(nullptr);
-		SetObjectVisibility(false);
-	}
 	// Get object type
 	ObjectType GetObjectType() const override { return ObjectType::ItemObject; }
 	// Get gold

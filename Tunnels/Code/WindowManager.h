@@ -2,7 +2,6 @@
 
 #include "UtilityTime.h"
 #include "EventListener.h"
-#include "GameObject.h"
 #include <iostream>
 #include <map>
 #include <list>

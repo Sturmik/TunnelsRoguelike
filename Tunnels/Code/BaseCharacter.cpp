@@ -73,6 +73,7 @@ void BaseCharacter::TakeDamage(int damage)
 	{
 		_recentHealth = 0;
 		SetObjectDeathState(true);
+		RemoveFromMapCell();
 	}
 }
 
@@ -114,19 +115,20 @@ int BaseCharacter::UseRecentWeapon()
 		_weaponQueue.front()->SetObjectDeathState(true);
 		// Remove it from front
 		_weaponQueue.pop();
+		// Check again, if we don't have a weapon - return zero
+		if (_weaponQueue.size() == 0) { return 0; }
 	}
-	// Check again, if we don't have a weapon - return zero
-	if (_weaponQueue.size() == 0) { return 0; }
 	// Else, use weapon
-	else { return _weaponQueue.front()->GetWeapon().UseWeapon(); }
+	std::cout << _objectName << " used the " << _weaponQueue.front()->GetObjectName() 
+		<< ", power =  " << _weaponQueue.front()->GetWeapon().GetPower() << ", durability = " << 
+		_weaponQueue.front()->GetWeapon().GetDurability() << std::endl;
+	return _weaponQueue.front()->GetWeapon().UseWeapon();
 }
 
 bool BaseCharacter::UseRecentHealPotion()
 {
 	// If we don't have a potion - return false
 	if (_healPotionStack.size() == 0) { return false; }
-	// Decrease walk points
-	_recentTurnPoints--;
 	// Go through all potions, and delete potions, which are consumed
 	while (_healPotionStack.top()->GetPotion().CheckPoints() == 0)
 	{
@@ -134,16 +136,17 @@ bool BaseCharacter::UseRecentHealPotion()
 		_healPotionStack.top()->SetObjectDeathState(true);
 		// Remove it from front
 		_healPotionStack.pop();
+		// Check again, if we don't have a potion - return false
+		if (_healPotionStack.size() == 0) { return false; }
 	}
-	// Check again, if we don't have a potion - return false
-	if (_healPotionStack.size() == 0) { return false; }
-	// Else consume potion
-	else
-	{
-		_recentHealth += _healPotionStack.top()->GetPotion().ConsumePoints();
-		if (_recentHealth > _maxHealth) { _recentHealth = _maxHealth; }
-		return true;
-	}
+	// Use turn point, if any left
+	if (!UseTurnPoint()) { return false; };
+	// Consume potion
+	std::cout << _objectName << " consumed the " << _healPotionStack.top()->GetObjectName() 
+		<< " - " << _healPotionStack.top()->GetPotion().CheckPoints() << std::endl;
+	_recentHealth += _healPotionStack.top()->GetPotion().ConsumePoints();
+	if (_recentHealth > _maxHealth) { _recentHealth = _maxHealth; }
+	return true;
 }
 
 bool BaseCharacter::UseRecentTurnPotion()
@@ -157,24 +160,30 @@ bool BaseCharacter::UseRecentTurnPotion()
 		_turnPotionsStack.top()->SetObjectDeathState(true);
 		// Remove it from front
 		_turnPotionsStack.pop();
+		// Check again, if we don't have a potion - return false
+		if (_turnPotionsStack.size() == 0) { return false; }
 	}
-	// Check again, if we don't have a potion - return false
-	if (_turnPotionsStack.size() == 0) { return false; }
-	// Else consume potion
-	else
-	{
-		_recentTurnPoints += _turnPotionsStack.top()->GetPotion().ConsumePoints();
-		if (_recentTurnPoints > _maxTurnPoints) { _recentTurnPoints = _maxTurnPoints; }
-		return true;
-	}
+	// Use turn point, if any left
+	if (!UseTurnPoint()) { return false; };
+	// Consume potion
+	std::cout << _objectName << " consumed the " << _turnPotionsStack.top()->GetObjectName()
+		<< " - " << _turnPotionsStack.top()->GetPotion().CheckPoints() << std::endl;
+	_recentTurnPoints += _turnPotionsStack.top()->GetPotion().ConsumePoints();
+	if (_recentTurnPoints > _maxTurnPoints) { _recentTurnPoints = _maxTurnPoints; }
+	return true;
 }
 
 void BaseCharacter::Interact(InteractiveObject* interactObj)
 {
-	// It is not interactive object - do nothing
-	if (interactObj == nullptr) { return; }
-	// Decrease turn points
-	_recentTurnPoints--;
+	// If pointer is nullptr, 
+	// or if it is the same object as interacts, 
+	// or object is dead - return
+	if (interactObj == nullptr 
+		|| interactObj == this 
+		|| IsObjectDead()) { return; }
+	// Check, if there are no turn points left
+	if (!UseTurnPoint()) { return; }
+	// Define type of behaviour with an object
 	switch (interactObj->GetObjectType())
 	{
 		// Character interaction
@@ -185,6 +194,7 @@ void BaseCharacter::Interact(InteractiveObject* interactObj)
 	case ObjectType::ItemObject:
 		ItemInteraction(dynamic_cast<Item*>(interactObj));
 		break;
+		// Trigger interaction
 	case ObjectType::TriggerObject:
 		TriggerInteraction(dynamic_cast<Trigger*>(interactObj));
 		break;
@@ -195,8 +205,6 @@ void BaseCharacter::Interact(InteractiveObject* interactObj)
 
 void BaseCharacter::Fight(BaseCharacter* opponentCharacter)
 {
-	// Decrease turn points
-	_recentTurnPoints--;
 	// Calculate hit force
 	int hitForce = rand() % (_strength + UseRecentWeapon());
 	// Try damage this object

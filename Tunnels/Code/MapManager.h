@@ -3,6 +3,7 @@
 #include "MapGenerator.h"
 #include "InterfaceManager.h"
 
+#include "Ladder.h"
 #include "PlayerCharacter.h"
 #include "Gold.h"
 #include "Armor.h"
@@ -13,12 +14,9 @@
 // - Map/Object generation
 // - Object moving
 // - Player object control
-class MapManager : WindowEventListener
+class MapManager : WindowEventListener, MethodEventListener
 {
 private:
-	bool inputTop = false;
-	bool inputBottom = false;
-
 	// Default constant size of the map
 	const int MAP_DEFAULT_SIZE_X = 120;
 	const int MAP_DEFAULT_SIZEE_Y = 60;
@@ -34,6 +32,7 @@ private:
 	WeaponHolder* _weaponHolder;
 	PotionHolder* _healPotionHolder;
 	PotionHolder* _turnPotionHolder;
+	Ladder* _ladder;
 
 	// Window manager
 	WindowManager* _windowManager;
@@ -61,11 +60,15 @@ public:
 		_healPotionHolder = new HealPotion(&_map, nullptr, 5);
 		_turnPotionHolder = new TurnPotion(&_map, nullptr, 10);
 
+		_ladder = new Ladder(&_map, nullptr);
+		_ladder->AddEventListener(this);
+
 		_windowManager->AddObject(Layer::FrontLayer, _playerCharacter);
 		_windowManager->AddObject(Layer::FrontLayer, _armorItem);
 		_windowManager->AddObject(Layer::FrontLayer, _weaponHolder);
 		_windowManager->AddObject(Layer::FrontLayer, _healPotionHolder);
 		_windowManager->AddObject(Layer::FrontLayer, _turnPotionHolder);
+		_windowManager->AddObject(Layer::FrontLayer, _ladder);
 	}
 
 	~MapManager() 
@@ -74,13 +77,16 @@ public:
 		_windowManager->RemoveListener(this); 
 	}
 
-	// Updates state of the program
+	// Updates state of map manager
 	void Update();
-	// Generates map with all objects on it
-	void GenerateMap(int numberOfRooms);
+
+	// Generates next map and updates objects
+	void NextMap(int numberOfRooms);
 	// Get map
 	Map& GetMap() { return _map; }
 
 	// Window event processing
 	virtual void WindowEventProcess(sf::RenderWindow& window, sf::Event windowEvent) override;
+	// Event processing
+	virtual void EventProcess(GameObject* gameObjectEvent) override;
 };

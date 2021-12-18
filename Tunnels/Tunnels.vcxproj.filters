@@ -93,6 +93,12 @@
     <ClInclude Include="Code\PathFindingAStar.h">
       <Filter>Файлы заголовков\MapObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Ladder.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\EnemyCharacter.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\GameObject.cpp">
@@ -135,6 +141,9 @@
       <Filter>Исходные файлы\MapObjects</Filter>
     </ClCompile>
     <ClCompile Include="Code\PathFindingAStar.cpp">
+      <Filter>Исходные файлы\MapObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\EnemyCharacter.cpp">
       <Filter>Исходные файлы\MapObjects</Filter>
     </ClCompile>
   </ItemGroup>

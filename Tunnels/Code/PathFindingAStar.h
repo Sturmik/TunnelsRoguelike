@@ -92,6 +92,6 @@ public:
 	}
 
 	// Generates shortest path
-	std::vector<Point2DInt> GeneratePath(Point2DInt startPoint, Point2DInt endPoint,
-		std::vector<CellState>& passableCells);
+	std::list<Point2DInt> GeneratePath(Point2DInt startPoint, Point2DInt endPoint,
+		std::vector<CellState> passableCells);
 };

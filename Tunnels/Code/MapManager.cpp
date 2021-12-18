@@ -2,31 +2,41 @@
 
 void MapManager::Update()
 {
-	// ...
 }
 
-void MapManager::GenerateMap(int numberOfRooms)
+void MapManager::NextMap(int numberOfRooms)
 {
 	// Generate map
 	MapGenerator mapGenerator(&_map);
-	mapGenerator.GenerateMap(numberOfRooms);
-
+	mapGenerator.NextMap(numberOfRooms);
 
 	// TEST
-	_playerCharacter->SetCellObjectPosition(Point2DInt(_map.GetRooms()[0].GetRightBottomPosition().x - 1,
-	_map.GetRooms()[0].GetRightBottomPosition().y - 1));
 
-	_armorItem->SetCellObjectPosition(Point2DInt(_map.GetRooms()[1].GetRightBottomPosition().x - 1,
-		_map.GetRooms()[1].GetRightBottomPosition().y - 1));
+	_playerCharacter->RestoreTurnPoints();
 
-	_weaponHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[2].GetRightBottomPosition().x - 1,
-		_map.GetRooms()[2].GetRightBottomPosition().y - 1));
+	_playerCharacter->RemoveFromMapCell();
+	_armorItem->RemoveFromMapCell();
+	_weaponHolder->RemoveFromMapCell();
+	_turnPotionHolder->RemoveFromMapCell();
+	_healPotionHolder->RemoveFromMapCell();
 
-	_turnPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[3].GetRightBottomPosition().x - 1,
-		_map.GetRooms()[3].GetRightBottomPosition().y - 1));
+	_playerCharacter->SetCellObjectPosition(Point2DInt(_map.GetRooms()[0].GetCenterOfTheRoomPosition().x,
+	_map.GetRooms()[0].GetCenterOfTheRoomPosition().y));
 
-	_healPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[4].GetRightBottomPosition().x - 1,
-		_map.GetRooms()[4].GetRightBottomPosition().y - 1));
+	_armorItem->SetCellObjectPosition(Point2DInt(_map.GetRooms()[1].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[1].GetCenterOfTheRoomPosition().y));
+
+	_weaponHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[2].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[2].GetCenterOfTheRoomPosition().y));
+
+	_turnPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[3].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[3].GetCenterOfTheRoomPosition().y));
+
+	_healPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[4].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[4].GetCenterOfTheRoomPosition().y));
+
+	_ladder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y));
 }
 
 void MapManager::WindowEventProcess(sf::RenderWindow& window, sf::Event windowEvent)
@@ -38,6 +48,13 @@ void MapManager::WindowEventProcess(sf::RenderWindow& window, sf::Event windowEv
 		(_playerCharacter->getPosition().y - view.getCenter().y) * UtilityTime::GetDeltaTimeFloat());
 	window.setView(view);
 	// Process events
+
+	// TEST
+	if (_playerCharacter->GetRecentTurnPoints() <= 0)
+	{
+		_playerCharacter->RestoreTurnPoints();
+	}
+
 	switch (windowEvent.type)
 	{
 		// Movement input check
@@ -58,6 +75,10 @@ void MapManager::WindowEventProcess(sf::RenderWindow& window, sf::Event windowEv
 		{
 			_playerCharacter->MoveCellObject(PlacementDirection::Right, targetMapCell);
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+		{
+			_playerCharacter->UseRecentTurnPotion();
+		}
 	default:
 		break;
 	}
@@ -65,5 +86,18 @@ void MapManager::WindowEventProcess(sf::RenderWindow& window, sf::Event windowEv
 	if (targetMapCell != nullptr)
 	{
 		_playerCharacter->Interact(dynamic_cast<InteractiveObject*>(targetMapCell->GetGameObject()));
+	}
+}
+
+void MapManager::EventProcess(GameObject* gameObjectEvent)
+{
+	// Event can be called only by trigger object
+	
+	// Check, if it is a ladder - cast game object to ladder
+	Ladder* ladder = dynamic_cast<Ladder*>(gameObjectEvent);
+	if (ladder != nullptr)
+	{
+		// Generate new level
+		NextMap(10);
 	}
 }

@@ -202,7 +202,7 @@ void MapGenerator::GenerateTunnel(Room* startRoom, Point2DInt startPoint, Room* 
 
 	// Form vector of passable cells and try to make the path
 	std::vector<CellState> passableCells = { CellState::None, CellState::Free };
-	std::vector<Point2DInt> path = _pathFinding->GeneratePath(startPoint, endPoint, passableCells);
+	std::list<Point2DInt> path = _pathFinding->GeneratePath(startPoint, endPoint, passableCells);
 	// If path was not formed
 	if (path.size() == 0)
 	{
@@ -217,17 +217,20 @@ void MapGenerator::GenerateTunnel(Room* startRoom, Point2DInt startPoint, Room* 
 	startRoom->AddDoor(startPoint, endRoom);
 	endRoom->AddDoor(endPoint, startRoom);
 
+	// Form iterator
+	std::list<Point2DInt>::iterator iter = path.begin(); iter++;
+	std::list<Point2DInt>::iterator iEnd = path.end(); iEnd--;
 	// Create tunnel
-	for (int i = 1; i < path.size() - 1; i++)
+	for (iter; iter != iEnd; iter++)
 	{
 		// Set state
-		_map->GetMap2D()[path[i].y][path[i].x].SetCellState(CellState::Free);
+		_map->GetMap2D()[iter->y][iter->x].SetCellState(CellState::Free);
 		// Set texture
-		_map->GetMap2D()[path[i].y][path[i].x].SetTexture(_tunnelTexture);
+		_map->GetMap2D()[iter->y][iter->x].SetTexture(_tunnelTexture);
 		// Set position
-		_map->GetMap2D()[path[i].y][path[i].x].setPosition
-		(sf::Vector2f(path[i].x + path[i].x * _map->GetMap2D()[path[i].y][path[i].x].getScale().x,
-			path[i].y + path[i].y * _map->GetMap2D()[path[i].y][path[i].x].getScale().y));
+		_map->GetMap2D()[iter->y][iter->x].setPosition
+		(sf::Vector2f(iter->x + iter->x * _map->GetMap2D()[iter->y][iter->x].getScale().x,
+			iter->y + iter->y * _map->GetMap2D()[iter->y][iter->x].getScale().y));
 	}
 
 	// Add textures on doors positions and update their state to occupied on start point
@@ -241,6 +244,7 @@ void MapGenerator::GenerateTunnel(Room* startRoom, Point2DInt startPoint, Room* 
 
 void MapGenerator::GenerateRoomConnections()
 {
+	if (_map->GetRooms().size() <= 1) { return; }
 	for (int room = 0; room < _map->GetRooms().size(); room++)
 	{
 		Room* roomConnector = &_map->GetRooms()[room];
@@ -293,17 +297,14 @@ void MapGenerator::GenerateRoomConnections()
 	}
 }
 
-void MapGenerator::GenerateMap(int numberOfRooms)
+void MapGenerator::NextMap(int numberOfRooms)
 {
 	// Clear all map
 	ClearMap();
 	// Generate rooms
 	GenerateRooms(numberOfRooms);
 	// Generate room doors and connections between them
-	if (numberOfRooms > 0)
-	{
-		GenerateRoomConnections();
-	}
+	GenerateRoomConnections();
 	// While, tunnels were generated, all doors were marked as occupied to 
 	// prevent A* start algorithm to build tunnels inside of the rooms.
 	// That's why, after the room connections generation was finished,

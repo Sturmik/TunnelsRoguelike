@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Trigger.h"
+#include "Ladder.h"
 #include "Gold.h"
 #include "Armor.h"
 #include "WeaponHolder.h"
@@ -60,6 +60,10 @@ protected:
 
 	~BaseCharacter();
 
+	// Override before change position method
+	// So, now it will allow object to move, only when it has turn points
+	bool BeforePositionChange() override {	return UseTurnPoint() && !IsObjectDead();}
+
 	// Derived classes must implement these functions to define interaction behaviour
 
 	// Interaction with characters
@@ -80,6 +84,22 @@ public:
 
 	// Get character type
 	virtual CharacterType GetCharacterType() const = 0;
+
+	// Try to use turn point, if there are ones
+	// Return true, if point was used
+	// Return false, if there are no points left
+	bool UseTurnPoint() 
+	{	
+		std::cout << _objectName << " has " << _recentTurnPoints - 1 << " turn points left" << std::endl;
+		if (_recentTurnPoints > 0) { _recentTurnPoints--; return true; }
+		return false;
+	}
+
+	// Restores turn points to maximum available
+	void RestoreTurnPoints() { _recentTurnPoints = _maxTurnPoints; }
+
+	// Get recent turn points
+	int GetRecentTurnPoints() const { return _recentTurnPoints; }
 
 	// Get recent health
 	int GetRecentHealth() const { return _recentHealth; }

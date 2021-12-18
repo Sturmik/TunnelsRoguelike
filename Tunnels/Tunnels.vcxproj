@@ -25,6 +25,7 @@
     <ClInclude Include="Code\Armor.h" />
     <ClInclude Include="Code\BaseCharacter.h" />
     <ClInclude Include="Code\CellObject.h" />
+    <ClInclude Include="Code\EnemyCharacter.h" />
     <ClInclude Include="Code\EventListener.h" />
     <ClInclude Include="Code\GameManager.h" />
     <ClInclude Include="Code\GameObject.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="Code\InteractiveObject.h" />
     <ClInclude Include="Code\InterfaceManager.h" />
     <ClInclude Include="Code\Item.h" />
+    <ClInclude Include="Code\Ladder.h" />
     <ClInclude Include="Code\Map.h" />
     <ClInclude Include="Code\MapCell.h" />
     <ClInclude Include="Code\MapGenerator.h" />
@@ -47,6 +49,7 @@
   <ItemGroup>
     <ClCompile Include="Code\BaseCharacter.cpp" />
     <ClCompile Include="Code\CellObject.cpp" />
+    <ClCompile Include="Code\EnemyCharacter.cpp" />
     <ClCompile Include="Code\GameManager.cpp" />
     <ClCompile Include="Code\GameObject.cpp" />
     <ClCompile Include="Code\InteractiveObject.cpp" />

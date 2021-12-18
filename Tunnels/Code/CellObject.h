@@ -23,6 +23,10 @@ protected:
 		SetNewPosition(mapCell->GetArrayPosition());
 	}
 
+	// Method is called, before position change,
+	// if it returns true - position will change, 
+	// otherwise it will not
+	virtual bool BeforePositionChange() { return true; }
 	// Methods is called after position change,
 	// Can be overriden for defining object behaviour
 	virtual void OnPositionChange() {};
@@ -32,6 +36,8 @@ public:
 	{
 		RemoveFromMapCell();
 	}
+
+	MapCell* GetMapCell() { return _mapCell; }
 
 	// MoveCellObject cell object
 	// Returns true - change of position is successful

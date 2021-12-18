@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include "GameObject.h"
 
 // Interface for event process
 // It allows classes, which implement this interface
@@ -9,7 +9,7 @@ class MethodEventListener
 {
 public:
 	// Event processing
-	virtual void EventProcess() = 0;
+	virtual void EventProcess(GameObject* gameObjectEvent) = 0;
 };
 
 // Interface for event process

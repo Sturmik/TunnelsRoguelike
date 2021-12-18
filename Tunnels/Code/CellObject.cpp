@@ -2,6 +2,8 @@
 
 void CellObject::SetNewPosition(Point2DInt newPos)
 {
+	// If before position change method returns false - don't move cell object
+	if (!BeforePositionChange()) { return; }
 	// New position
 	if (_mapCell == nullptr)
 	{
@@ -53,6 +55,7 @@ bool CellObject::MoveCellObject(PlacementDirection moveDirection, MapCell*& targ
 			_mapCell->GetArrayPosition().y), targetMapCell);
 		break;
 	default:
+		return false;
 		break;
 	}
 }
@@ -90,10 +93,11 @@ bool CellObject::SetCellObjectPosition(Point2DInt position)
 	}
 }
 
-
 void CellObject::RemoveFromMapCell()
 {
 	if (_mapCell == nullptr) { return; }
 	_mapCell->SetCellState(CellState::Free);
 	_mapCell->SetGameObject(nullptr);
+	_mapCell = nullptr;
+	SetObjectVisibility(false);
 }

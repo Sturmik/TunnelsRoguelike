@@ -26,7 +26,7 @@ GameObject::GameObject()
 	// Set object activity to true
 	_isObjectVisible = true;
 	// Set object death state to false
-	_isDead = false;
+	_isObjectDead = false;
 	// Set default scale to the object
 	setScale(DEFAULT_SCALE_SIZE, DEFAULT_SCALE_SIZE);
 }

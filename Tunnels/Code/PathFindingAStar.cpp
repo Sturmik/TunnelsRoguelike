@@ -69,14 +69,14 @@ void PathFindingAStar::FormNodeMap(Point2DInt startPoint, Point2DInt endPoint, s
 	}
 }
 
-std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Point2DInt endPoint,
-	std::vector<CellState>& passableCells)
+std::list<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Point2DInt endPoint,
+	std::vector<CellState> passableCells)
 {
 	// Check, if start or end position are passable cells
 	if (!IsCellPassable(passableCells, startPoint)
 		|| !IsCellPassable(passableCells, endPoint))
 	{
-		return std::vector<Point2DInt>();
+		return std::list<Point2DInt>();
 	}
 
 	// Form node map
@@ -102,7 +102,7 @@ std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Po
 			uncheckedNodesList.pop_front();
 			// If list is empty, that means there is no way,
 			// we can get to our position. Return empty vector
-			if (uncheckedNodesList.empty()) { return std::vector<Point2DInt>(); }
+			if (uncheckedNodesList.empty()) { return std::list<Point2DInt>(); }
 		}
 		// Get node
 		ANode* aNode = uncheckedNodesList.front();
@@ -142,7 +142,7 @@ std::vector<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Po
 	}
 
 	// Path
-	std::vector<Point2DInt> path;
+	std::list<Point2DInt> path;
 	// Fill path with data, if we got to the end point
 	if (hasFoundEndPoint)
 	{
