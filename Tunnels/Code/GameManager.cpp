@@ -17,5 +17,7 @@ void GameManager::UpdateState()
 	{
 		// Update window state
 		_windowManager.Update();
+		// Update map manager state
+		_mapManager.Update();
 	}
 }

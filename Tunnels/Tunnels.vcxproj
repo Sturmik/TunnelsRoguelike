@@ -34,10 +34,13 @@
     <ClInclude Include="Code\InterfaceManager.h" />
     <ClInclude Include="Code\Item.h" />
     <ClInclude Include="Code\Ladder.h" />
+    <ClInclude Include="Code\LargeEnemyCharacter.h" />
+    <ClInclude Include="Code\LightEnemyCharacter.h" />
     <ClInclude Include="Code\Map.h" />
     <ClInclude Include="Code\MapCell.h" />
     <ClInclude Include="Code\MapGenerator.h" />
     <ClInclude Include="Code\MapManager.h" />
+    <ClInclude Include="Code\MediumEnemyCharacter.h" />
     <ClInclude Include="Code\PathFindingAStar.h" />
     <ClInclude Include="Code\PlayerCharacter.h" />
     <ClInclude Include="Code\PotionHolder.h" />

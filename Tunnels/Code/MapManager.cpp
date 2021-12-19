@@ -2,6 +2,33 @@
 
 void MapManager::Update()
 {
+	// Map Manager updates configures turn cycle
+	if (_turnState == CharacterType::PlayerType && _playerCharacter->GetRecentTurnPoints() <= 0)
+	{
+		// Pass turn to enemy
+		_turnState = CharacterType::EnemyType;
+		if (!_lightEnemyCharacter->IsObjectDead())
+		{
+			_lightEnemyCharacter->RestoreTurnPoints();
+		}
+		if (!_mediumEnemyCharacter->IsObjectDead())
+		{
+			_mediumEnemyCharacter->RestoreTurnPoints();
+		}
+		if (!_largeEnemyCharacter->IsObjectDead())
+		{
+			_largeEnemyCharacter->RestoreTurnPoints();
+		}
+	}
+	if (_turnState == CharacterType::EnemyType &&
+		_lightEnemyCharacter->GetRecentTurnPoints() <= 0 &&
+		_mediumEnemyCharacter->GetRecentTurnPoints() <= 0 &&
+		_largeEnemyCharacter->GetRecentTurnPoints() <= 0)
+	{
+		// Pass turn to player
+		_turnState = CharacterType::PlayerType;
+		_playerCharacter->RestoreTurnPoints();
+	}
 }
 
 void MapManager::NextMap(int numberOfRooms)
@@ -12,7 +39,7 @@ void MapManager::NextMap(int numberOfRooms)
 
 	// TEST
 
-	_playerCharacter->RestoreTurnPoints();
+	_turnState = CharacterType::PlayerType;
 
 	_playerCharacter->RemoveFromMapCell();
 	_armorItem->RemoveFromMapCell();
@@ -23,20 +50,31 @@ void MapManager::NextMap(int numberOfRooms)
 	_playerCharacter->SetCellObjectPosition(Point2DInt(_map.GetRooms()[0].GetCenterOfTheRoomPosition().x,
 	_map.GetRooms()[0].GetCenterOfTheRoomPosition().y));
 
-	_armorItem->SetCellObjectPosition(Point2DInt(_map.GetRooms()[1].GetCenterOfTheRoomPosition().x,
-		_map.GetRooms()[1].GetCenterOfTheRoomPosition().y));
+	_armorItem->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y + 4));
 
-	_weaponHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[2].GetCenterOfTheRoomPosition().x,
-		_map.GetRooms()[2].GetCenterOfTheRoomPosition().y));
+	_weaponHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y + 3));
 
-	_turnPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[3].GetCenterOfTheRoomPosition().x,
-		_map.GetRooms()[3].GetCenterOfTheRoomPosition().y));
+	_turnPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y + 2));
 
-	_healPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[4].GetCenterOfTheRoomPosition().x,
-		_map.GetRooms()[4].GetCenterOfTheRoomPosition().y));
+	_healPotionHolder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y + 1));
 
-	_ladder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x,
+	_lightEnemyCharacter->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x + 1,
 		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y));
+
+	_mediumEnemyCharacter->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y));
+
+	_largeEnemyCharacter->SetCellObjectPosition(Point2DInt(_map.GetRooms()[5].GetCenterOfTheRoomPosition().x - 1,
+		_map.GetRooms()[5].GetCenterOfTheRoomPosition().y));
+
+	_ladder->SetCellObjectPosition(Point2DInt(_map.GetRooms()[6].GetCenterOfTheRoomPosition().x,
+		_map.GetRooms()[6].GetCenterOfTheRoomPosition().y));
+
+	_playerCharacter->RestoreTurnPoints();
 }
 
 void MapManager::WindowEventProcess(sf::RenderWindow& window, sf::Event windowEvent)
@@ -48,13 +86,6 @@ void MapManager::WindowEventProcess(sf::RenderWindow& window, sf::Event windowEv
 		(_playerCharacter->getPosition().y - view.getCenter().y) * UtilityTime::GetDeltaTimeFloat());
 	window.setView(view);
 	// Process events
-
-	// TEST
-	if (_playerCharacter->GetRecentTurnPoints() <= 0)
-	{
-		_playerCharacter->RestoreTurnPoints();
-	}
-
 	switch (windowEvent.type)
 	{
 		// Movement input check

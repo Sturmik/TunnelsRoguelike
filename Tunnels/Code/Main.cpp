@@ -3,7 +3,7 @@
 
 int main()
 {
-	srand(time(NULL));
+	//srand(time(NULL));
 	GameManager gm;
 	gm.Start();
 	return 0;

@@ -152,11 +152,11 @@ std::list<Point2DInt> PathFindingAStar::GeneratePath(Point2DInt startPoint, Poin
 		while (nodeForPathGenerating->GetParent() != nullptr)
 		{
 			// Push position of node
-			path.push_back(nodeForPathGenerating->GetArrayPosition());
+			path.push_front(nodeForPathGenerating->GetArrayPosition());
 			// Change node to parent
 			nodeForPathGenerating = nodeForPathGenerating->GetParent();
 		}
-		path.push_back(nodeForPathGenerating->GetArrayPosition());
+		path.push_front(nodeForPathGenerating->GetArrayPosition());
 	}
 	// Return path
 	return path;

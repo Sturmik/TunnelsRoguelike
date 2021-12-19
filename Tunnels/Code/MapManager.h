@@ -5,6 +5,9 @@
 
 #include "Ladder.h"
 #include "PlayerCharacter.h"
+#include "LightEnemyCharacter.h"
+#include "MediumEnemyCharacter.h"
+#include "LargeEnemyCharacter.h"
 #include "Gold.h"
 #include "Armor.h"
 #include "WeaponHolder.h"
@@ -24,6 +27,9 @@ private:
 	// Map with game objects
 	Map _map;
 
+	// Defines turn cycle
+	CharacterType _turnState;
+
 	// Player object
 	PlayerCharacter* _playerCharacter;
 
@@ -32,6 +38,10 @@ private:
 	WeaponHolder* _weaponHolder;
 	PotionHolder* _healPotionHolder;
 	PotionHolder* _turnPotionHolder;
+	LightEnemyCharacter* _lightEnemyCharacter;
+	MediumEnemyCharacter* _mediumEnemyCharacter;
+	LargeEnemyCharacter* _largeEnemyCharacter;
+
 	Ladder* _ladder;
 
 	// Window manager
@@ -40,7 +50,7 @@ private:
 	InterfaceManager* _interfaceManager;
 public:
 	MapManager(WindowManager* windowManager, InterfaceManager* interfaceManager) : 
-		_map(MAP_DEFAULT_SIZE_X, MAP_DEFAULT_SIZEE_Y), 
+		_map(MAP_DEFAULT_SIZE_X, MAP_DEFAULT_SIZEE_Y), _turnState(CharacterType::PlayerType),
 		_windowManager(windowManager), _interfaceManager(interfaceManager)
 	{
 		// "Subscribe" to window manager, to get messages about events
@@ -54,20 +64,29 @@ public:
 			}
 		}
 		// Initialize objects TEST
-		_playerCharacter = new PlayerCharacter(&_map,nullptr, "Player", 5, 5, 10, 2, 5);
+		_playerCharacter = new PlayerCharacter(&_map,nullptr, "Player", 5, 5, 10, 5, 5);
+
 		_armorItem = new Armor(&_map, nullptr, 5);
-		_weaponHolder = new WeaponHolder(&_map, nullptr, "PainBringer", WeaponHolder::Weapon(50, 2));
+		_weaponHolder = new WeaponHolder(&_map, nullptr, "PainBringer", WeaponHolder::Weapon(5, 2));
 		_healPotionHolder = new HealPotion(&_map, nullptr, 5);
 		_turnPotionHolder = new TurnPotion(&_map, nullptr, 10);
+		_lightEnemyCharacter = new LightEnemyCharacter(_playerCharacter, &_map, nullptr);
+		_mediumEnemyCharacter = new MediumEnemyCharacter(_playerCharacter, &_map, nullptr);
+		_largeEnemyCharacter = new LargeEnemyCharacter(_playerCharacter, &_map, nullptr);
 
 		_ladder = new Ladder(&_map, nullptr);
 		_ladder->AddEventListener(this);
 
 		_windowManager->AddObject(Layer::FrontLayer, _playerCharacter);
+
 		_windowManager->AddObject(Layer::FrontLayer, _armorItem);
 		_windowManager->AddObject(Layer::FrontLayer, _weaponHolder);
 		_windowManager->AddObject(Layer::FrontLayer, _healPotionHolder);
 		_windowManager->AddObject(Layer::FrontLayer, _turnPotionHolder);
+		_windowManager->AddObject(Layer::FrontLayer, _playerCharacter);
+		_windowManager->AddObject(Layer::FrontLayer, _lightEnemyCharacter);
+		_windowManager->AddObject(Layer::FrontLayer, _mediumEnemyCharacter);
+		_windowManager->AddObject(Layer::FrontLayer, _largeEnemyCharacter);
 		_windowManager->AddObject(Layer::FrontLayer, _ladder);
 	}
 

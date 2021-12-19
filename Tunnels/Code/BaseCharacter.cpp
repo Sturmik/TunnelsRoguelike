@@ -52,33 +52,35 @@ void BaseCharacter::ItemInteraction(Item* itemObj)
 
 void BaseCharacter::TakeDamage(int damage)
 {
-	// If damage is lesser than amor,
-	// don't take damage and decrease armor
-	if (damage <= _armor)
+	std::cout << _objectName << " takes damage " << damage << std::endl;
+	// If damage is larger than armor, deal it to the health
+	// but decrease it by armor level
+	if (damage > _armor)
 	{
-		_armor -= _armor / 4;
+		_recentHealth -= damage - _armor;
 	}
-	// Else, deal damage to the health
-	else
-	{
-		_recentHealth -= damage;
-	}
+	// Decrease armor
+	_armor -= damage;
 	// If armor is lesser than zero, set it to zero
-	if (_armor < 0)
+	if (_armor <= 0)
 	{
 		_armor = 0;
 	}
 	// If recent health is lower than zero - kill gameobject
-	if (_recentHealth < 0)
+	if (_recentHealth <= 0)
 	{
-		_recentHealth = 0;
+		_recentHealth = _recentTurnPoints=  0;
 		SetObjectDeathState(true);
 		RemoveFromMapCell();
 	}
+
+	std::cout << _objectName << " - hp left: " << _recentHealth << std::endl;
+	std::cout << _objectName << " - armor left " << _armor << std::endl;
 }
 
 void BaseCharacter::GetLooted(BaseCharacter* opponent)
 {
+	std::cout << _objectName << " gets looted by " << opponent->GetObjectName() << std::endl;
 	// Loot some gold
 	opponent->_goldCount += _goldCount / 4;
 	_goldCount = 0;
@@ -205,8 +207,9 @@ void BaseCharacter::Interact(InteractiveObject* interactObj)
 
 void BaseCharacter::Fight(BaseCharacter* opponentCharacter)
 {
+	std::cout << _objectName << " fights " << opponentCharacter->GetObjectName() << std::endl;
 	// Calculate hit force
-	int hitForce = rand() % (_strength + UseRecentWeapon());
+	int hitForce = rand() % (_strength + UseRecentWeapon()) + 1;
 	// Try damage this object
 	opponentCharacter->TakeDamage(hitForce);
 	// If opponent was defeated, loot him

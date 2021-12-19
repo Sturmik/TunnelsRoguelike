@@ -99,6 +99,15 @@
     <ClInclude Include="Code\EnemyCharacter.h">
       <Filter>Файлы заголовков\MapObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Code\LightEnemyCharacter.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\MediumEnemyCharacter.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\LargeEnemyCharacter.h">
+      <Filter>Файлы заголовков\MapObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\GameObject.cpp">

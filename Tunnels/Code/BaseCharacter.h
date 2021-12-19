@@ -54,7 +54,7 @@ protected:
 		int maxWalkPoints, int maxHealth,
 		int armor, int strength, int goldCount)
 		: InteractiveObject(map, mapCell,
-			name), _maxTurnPoints(maxWalkPoints), _recentTurnPoints(0),
+			name), _maxTurnPoints(maxWalkPoints), _recentTurnPoints(maxWalkPoints),
 		_maxHealth(maxHealth), _recentHealth(maxHealth),
 		_armor(armor), _strength(strength), _goldCount(goldCount) {}
 
