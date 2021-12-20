@@ -41,16 +41,18 @@ public:
 
 	// MoveCellObject cell object
 	// Returns true - change of position is successful
-	// Returns false - impossible to change position, check target map cell
+	// Returns false - impossible to change position, possible to check target map cell
 	bool MoveCellObject(PlacementDirection moveDirection, MapCell*& targetMapCell);
 	// Set cell object position
 	// Returns true - change of position is successful
-	// Returns false - impossible to change position, check target map cell
+	// Returns false - impossible to change position, possible to check target map cell
 	bool SetCellObjectPosition(Point2DInt position, MapCell*& targetMapCell);
 	// Set cell object position
 	// Returns true - change of position is successful
 	// Returns false - impossible to change position
 	bool SetCellObjectPosition(Point2DInt position);
 	// Removes object from recent map cell
+	// By default map cell will be set to free
+	// You can set cell state, after remove (optional)
 	virtual void RemoveFromMapCell();
 };

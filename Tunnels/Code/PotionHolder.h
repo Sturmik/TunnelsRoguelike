@@ -39,29 +39,3 @@ protected:
 	PotionHolder(Map* map, MapCell* mapCell, std::string name, int points)
 		: Item(map, mapCell, name), _potion(points) {}
 };
-
-class HealPotion : public PotionHolder
-{
-public:
-	HealPotion(Map* map, MapCell* mapCell, int points)
-		: PotionHolder(map, mapCell, "Heal Potion", points) 
-	{
-		// Load texture
-		SetTexture("Textures\\HealPotion.png");
-	}
-	// Gets heal potion
-	PotionHolder* GetHealPotion() override { return this; }
-};
-
-class TurnPotion : public PotionHolder
-{
-public:
-	TurnPotion(Map* map, MapCell* mapCell, int points)
-		: PotionHolder(map, mapCell, "Turn Potion", points) 
-	{
-		// Load texture
-		SetTexture("Textures\\TurnPotion.png");
-	}
-	// Gets walk potion
-	PotionHolder* GetTurnPotion() override { return this; }
-};

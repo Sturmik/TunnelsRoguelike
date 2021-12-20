@@ -29,4 +29,15 @@ public:
 	{
 		return CharacterType::PlayerType;
 	}
+
+	// Swap weapons in queue
+	void SwapWeapons()
+	{
+		if (_weaponQueue.size() > 1)
+		{
+			// Swap weapons
+			_weaponQueue.push(_weaponQueue.front());
+			_weaponQueue.pop();
+		}
+	}
 };

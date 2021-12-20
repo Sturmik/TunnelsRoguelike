@@ -36,8 +36,7 @@ protected:
 	// Character armor, for damage avoiding
 	int _armor;
 	// Character natural strength, for dealing damage
-	// By natural, we mean damage without any additions, such as
-	// weapons or potions
+	// By natural, we mean damage without any additions, such as weapons 
 	int _strength;
 	// Amount of gold, which character carries
 	int _goldCount;
@@ -54,7 +53,7 @@ protected:
 		int maxWalkPoints, int maxHealth,
 		int armor, int strength, int goldCount)
 		: InteractiveObject(map, mapCell,
-			name), _maxTurnPoints(maxWalkPoints), _recentTurnPoints(maxWalkPoints),
+			name), _maxTurnPoints(maxWalkPoints), _recentTurnPoints(_maxTurnPoints),
 		_maxHealth(maxHealth), _recentHealth(maxHealth),
 		_armor(armor), _strength(strength), _goldCount(goldCount) {}
 
@@ -101,6 +100,9 @@ public:
 	// Get recent turn points
 	int GetRecentTurnPoints() const { return _recentTurnPoints; }
 
+	// Set recent turn points
+	void SetRecentTurnPoints(int turnPoints) { _recentTurnPoints = turnPoints; }
+
 	// Get recent health
 	int GetRecentHealth() const { return _recentHealth; }
 
@@ -113,14 +115,20 @@ public:
 	// Get gold count
 	int GetGoldCount() const { return _goldCount; }
 
-	// Uses recent weapon (front in queue)
+	// Uses recent weapon
+	// Returns damage it can deal and decreases it's durability
 	int UseRecentWeapon();
 
 	// Uses recent heal potion
-	bool UseRecentHealPotion();
+	// Returns true, if potion was successfuly consumed
+	bool UseHealPotion();
 
 	// Uses recent heal potion
-	bool UseRecentTurnPotion();
+	// Returns true, if potion was successfuly consumed
+	bool UseTurnPotion();
+
+	// Removes all items
+	void RemoveAllItems();
 
 	// Interact with object
 	void Interact(InteractiveObject* interactObj);

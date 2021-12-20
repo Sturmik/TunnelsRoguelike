@@ -10,7 +10,11 @@ private:
 	int _gold;
 public:
 	Gold(Map* map, MapCell* mapCell, int gold)
-		: Item(map, mapCell, "Gold"), _gold(gold) { }
+		: Item(map, mapCell, "Gold"), _gold(gold)
+	{
+		// Load texture
+		SetTexture("Textures\\Gold.png");
+	}
 
 	int GetGold() override 
 	{

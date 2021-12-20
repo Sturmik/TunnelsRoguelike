@@ -30,16 +30,16 @@ public:
 		Weapon(int power, int durability) : _power(power), _durability(durability) {}
 	};
 
+	// Gets weapon
+	Weapon& GetWeapon() { return _weapon; }
+	WeaponHolder* GetWeaponHolder() override { return this; }
+protected:
 	WeaponHolder(Map* map, MapCell* mapCell, std::string name, Weapon weapon)
-		: Item(map, mapCell, name), _weapon(weapon) 
+		: Item(map, mapCell, name), _weapon(weapon)
 	{
 		// Load texture
 		SetTexture("Textures\\Weapon.png");
 	}
 
-	// Gets weapon
-	Weapon& GetWeapon() { return _weapon; }
-	WeaponHolder* GetWeaponHolder() override { return this; }
-private:
 	Weapon _weapon;
 };

@@ -297,7 +297,7 @@ void MapGenerator::GenerateRoomConnections()
 	}
 }
 
-void MapGenerator::NextMap(int numberOfRooms)
+void MapGenerator::GenerateMap(int numberOfRooms)
 {
 	// Clear all map
 	ClearMap();

@@ -4,8 +4,8 @@ void GameManager::Start()
 {
 	// Open window
 	_windowManager.OpenWindow(sf::VideoMode(500, 300), "Tunnels");
-	// Generate map
-	_mapManager.NextMap(10);
+	// Start gameplay on map manager
+	_mapManager.StartGameplay();
 	// Start the game, by updating its state
 	UpdateState();
 }

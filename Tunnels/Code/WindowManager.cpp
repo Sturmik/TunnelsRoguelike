@@ -1,9 +1,6 @@
 #include "WindowManager.h"
 
-WindowManager::WindowManager() :_window(), _gameObjectsLayers()
-{
-    // Initialize
-}
+WindowManager::WindowManager() :_window(), _gameObjectsLayers(){}
 
 WindowManager::~WindowManager()
 {
@@ -21,10 +18,30 @@ void WindowManager::Update()
     sf::Event windowEvent;
     while (_window.pollEvent(windowEvent))
     {
+        // Resize event
         if (windowEvent.type == sf::Event::Resized)
         {
             sf::FloatRect visibleArea(0, 0, windowEvent.size.width, windowEvent.size.height);
             _window.setView(sf::View(visibleArea));
+        }
+        // Zoom event
+        if (windowEvent.type == sf::Event::KeyPressed)
+        {
+            sf::View view = _window.getView();
+            switch (windowEvent.key.code)
+            {
+            // Zoom out
+            case sf::Keyboard::X:
+                view.zoom(2);
+                break;
+            // Zoom in
+            case sf::Keyboard::Z:
+                view.zoom(0.5);
+                break;
+            default:
+                break;
+            }
+            _window.setView(view);
         }
         // Send message to all event listeners
         for (std::list<WindowEventListener*>::iterator listener = _eventListeners.begin();
@@ -43,7 +60,7 @@ void WindowManager::Update()
     // Clear window
     _window.clear();
     // Draw all objects
-    for (int layer = Layer::BackLayer; layer <= Layer::InterfaceLayer; layer++)
+    for (int layer = Layer::BackgroundLayer; layer <= Layer::InterfaceLayer; layer++)
     {
         std::list<sf::Drawable*>::iterator lastObject = _gameObjectsLayers[static_cast<Layer>(layer)].begin();
         for (std::list<sf::Drawable*>::iterator object = _gameObjectsLayers[static_cast<Layer>(layer)].begin();
@@ -87,7 +104,7 @@ void WindowManager::AddObject(Layer layer, sf::Drawable* newObject)
 
 void WindowManager::RemoveObject(sf::Drawable* objectToRemove)
 {
-    for (int layer = Layer::BackLayer; layer < Layer::InterfaceLayer; layer++)
+    for (int layer = Layer::BackgroundLayer; layer < Layer::InterfaceLayer; layer++)
     {
         Layer objectLayer = static_cast<Layer>(layer);
         for (std::list<sf::Drawable*>::iterator object = _gameObjectsLayers[static_cast<Layer>(layer)].begin();

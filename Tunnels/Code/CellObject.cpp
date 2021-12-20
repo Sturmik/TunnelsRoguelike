@@ -95,9 +95,18 @@ bool CellObject::SetCellObjectPosition(Point2DInt position)
 
 void CellObject::RemoveFromMapCell()
 {
+	// If map cell is nullptr - return
 	if (_mapCell == nullptr) { return; }
-	_mapCell->SetCellState(CellState::Free);
-	_mapCell->SetGameObject(nullptr);
+	// If object is on the map cell - set it to free state,
+	// otherwise don't change anything
+	_mapCell->SetCellState(_mapCell->GetGameObject() == this
+		? CellState::Free : _mapCell->GetCellState());
+	// If object is on the map cell - set it's object pointer to zero,
+	// otherwise don't change anything
+	_mapCell->SetGameObject(_mapCell->GetGameObject() == this
+		? nullptr : _mapCell->GetGameObject());
+	// Set assigned map cell to zero
 	_mapCell = nullptr;
+	// Set object to invisible state
 	SetObjectVisibility(false);
 }

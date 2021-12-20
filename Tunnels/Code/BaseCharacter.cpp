@@ -2,25 +2,7 @@
 
 BaseCharacter::~BaseCharacter()
 {
-	std::cout << _objectName << " is defeated!" << std::endl;
-	// Delete all weapons
-	while (!_weaponQueue.empty())
-	{
-		_weaponQueue.front()->SetObjectDeathState(true);
-		_weaponQueue.pop();
-	}
-	// Delete all heal potions
-	while (!_healPotionStack.empty())
-	{
-		_healPotionStack.top()->SetObjectDeathState(true);
-		_healPotionStack.pop();
-	}
-	// Delete all turn potions
-	while (!_turnPotionsStack.empty())
-	{
-		_turnPotionsStack.top()->SetObjectDeathState(true);
-		_turnPotionsStack.pop();
-	}
+	RemoveAllItems();
 }
 
 void BaseCharacter::ItemInteraction(Item* itemObj)
@@ -28,7 +10,7 @@ void BaseCharacter::ItemInteraction(Item* itemObj)
 	// Get item out of its map cell
 	itemObj->RemoveFromMapCell();
 	// Log about this
-	std::cout  << _objectName << " picked up a " << itemObj->GetObjectName() << std::endl;
+	std::cout  << _objectName << " picked up " << itemObj->GetObjectName() << std::endl;
 	// Get armor
 	_armor += itemObj->GetArmor();
 	// Get gold
@@ -82,10 +64,10 @@ void BaseCharacter::GetLooted(BaseCharacter* opponent)
 {
 	std::cout << _objectName << " gets looted by " << opponent->GetObjectName() << std::endl;
 	// Loot some gold
-	opponent->_goldCount += _goldCount / 4;
+	opponent->_goldCount += _goldCount;
 	_goldCount = 0;
 	// Loot armor
-	opponent->_armor += _armor / 4;
+	opponent->_armor += _armor;
 	_armor = 0;
 	// Loot recent weapon
 	if (_weaponQueue.size() > 0)
@@ -124,10 +106,18 @@ int BaseCharacter::UseRecentWeapon()
 	std::cout << _objectName << " used the " << _weaponQueue.front()->GetObjectName() 
 		<< ", power =  " << _weaponQueue.front()->GetWeapon().GetPower() << ", durability = " << 
 		_weaponQueue.front()->GetWeapon().GetDurability() << std::endl;
+	// If weapon was broken, remove it from queue
+	if (_weaponQueue.front()->GetWeapon().GetDurability() <= 0)
+	{
+		// Set this item to dead state
+		_weaponQueue.front()->SetObjectDeathState(true);
+		// Remove it from front
+		_weaponQueue.pop();
+	}
 	return _weaponQueue.front()->GetWeapon().UseWeapon();
 }
 
-bool BaseCharacter::UseRecentHealPotion()
+bool BaseCharacter::UseHealPotion()
 {
 	// If we don't have a potion - return false
 	if (_healPotionStack.size() == 0) { return false; }
@@ -148,10 +138,15 @@ bool BaseCharacter::UseRecentHealPotion()
 		<< " - " << _healPotionStack.top()->GetPotion().CheckPoints() << std::endl;
 	_recentHealth += _healPotionStack.top()->GetPotion().ConsumePoints();
 	if (_recentHealth > _maxHealth) { _recentHealth = _maxHealth; }
+	// Set this item to dead state
+	_healPotionStack.top()->SetObjectDeathState(true);
+	// Remove it from front
+	_healPotionStack.pop();
+	// Return true
 	return true;
 }
 
-bool BaseCharacter::UseRecentTurnPotion()
+bool BaseCharacter::UseTurnPotion()
 {
 	// If we don't have a potion - return false
 	if (_turnPotionsStack.size() == 0) { return false; }
@@ -170,9 +165,36 @@ bool BaseCharacter::UseRecentTurnPotion()
 	// Consume potion
 	std::cout << _objectName << " consumed the " << _turnPotionsStack.top()->GetObjectName()
 		<< " - " << _turnPotionsStack.top()->GetPotion().CheckPoints() << std::endl;
+	// Turn potion allows to get out of the maximum given turn points
 	_recentTurnPoints += _turnPotionsStack.top()->GetPotion().ConsumePoints();
-	if (_recentTurnPoints > _maxTurnPoints) { _recentTurnPoints = _maxTurnPoints; }
+	// Set this item to dead state
+	_turnPotionsStack.top()->SetObjectDeathState(true);
+	// Remove it from front
+	_turnPotionsStack.pop();
+	// Return true
 	return true;
+}
+
+void BaseCharacter::RemoveAllItems()
+{
+	// Delete all weapons
+	while (!_weaponQueue.empty())
+	{
+		_weaponQueue.front()->SetObjectDeathState(true);
+		_weaponQueue.pop();
+	}
+	// Delete all heal potions
+	while (!_healPotionStack.empty())
+	{
+		_healPotionStack.top()->SetObjectDeathState(true);
+		_healPotionStack.pop();
+	}
+	// Delete all turn potions
+	while (!_turnPotionsStack.empty())
+	{
+		_turnPotionsStack.top()->SetObjectDeathState(true);
+		_turnPotionsStack.pop();
+	}
 }
 
 void BaseCharacter::Interact(InteractiveObject* interactObj)
@@ -194,7 +216,7 @@ void BaseCharacter::Interact(InteractiveObject* interactObj)
 		break;
 		// Item interaction
 	case ObjectType::ItemObject:
-		ItemInteraction(dynamic_cast<Item*>(interactObj));
+ 		ItemInteraction(dynamic_cast<Item*>(interactObj));
 		break;
 		// Trigger interaction
 	case ObjectType::TriggerObject:

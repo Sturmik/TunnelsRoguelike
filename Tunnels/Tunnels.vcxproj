@@ -30,6 +30,7 @@
     <ClInclude Include="Code\GameManager.h" />
     <ClInclude Include="Code\GameObject.h" />
     <ClInclude Include="Code\Gold.h" />
+    <ClInclude Include="Code\HealPotion.h" />
     <ClInclude Include="Code\InteractiveObject.h" />
     <ClInclude Include="Code\InterfaceManager.h" />
     <ClInclude Include="Code\Item.h" />
@@ -45,8 +46,12 @@
     <ClInclude Include="Code\PlayerCharacter.h" />
     <ClInclude Include="Code\PotionHolder.h" />
     <ClInclude Include="Code\Trigger.h" />
+    <ClInclude Include="Code\TurnPotion.h" />
     <ClInclude Include="Code\UtilityTime.h" />
+    <ClInclude Include="Code\WeaponDagger.h" />
     <ClInclude Include="Code\WeaponHolder.h" />
+    <ClInclude Include="Code\WeaponMace.h" />
+    <ClInclude Include="Code\WeaponSword.h" />
     <ClInclude Include="Code\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>

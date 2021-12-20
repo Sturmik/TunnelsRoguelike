@@ -25,9 +25,9 @@ void EnemyCharacter::Update()
 	// Caclculate distance to player
 	float distanceToPlayer = _mapCell->GetArrayPosition().Distance(_playerCharacter->GetMapCell()->GetArrayPosition());
 	// If player is nearby and there are no turn points left - try to use turn potion
-	if (distanceToPlayer < ENEMY_VIEW_RADIUS && GetRecentTurnPoints() <= 1) { UseRecentTurnPotion();  }
+	if (distanceToPlayer < ENEMY_VIEW_RADIUS && GetRecentTurnPoints() <= 1) { UseTurnPotion();  }
 	// If health if lesser than half of full - heal
-	if (_recentHealth < _maxHealth / 2) { UseRecentHealPotion(); }
+	if (_recentHealth < _maxHealth / 2) { UseHealPotion(); }
 	// Target map cell for object interaction
 	MapCell* targetMapCell = nullptr;
 	// If there is player nearby - chase and fight him
@@ -43,16 +43,10 @@ void EnemyCharacter::Update()
 	// Go by the path
 	if (_pathToPlayer.size() > 0)
 	{
-		if (SetCellObjectPosition(*_pathToPlayer.begin(), targetMapCell))
-		{
-			// If movement was successful, pop front element, because it is recent enemy position
-			_pathToPlayer.pop_front();
-		}
-		else
-		{
-			// Pass the turn
-			UseTurnPoint();
-		}
+		// If movement was successful, pop front element, because it is recent enemy position
+		if (SetCellObjectPosition(*_pathToPlayer.begin(), targetMapCell)) { _pathToPlayer.pop_front(); }
+		// Else if target map cell is the same point, as the enemy is located - pass the turn
+		else if (targetMapCell == _mapCell) { UseTurnPoint(); }
 	}
 	else
 	{

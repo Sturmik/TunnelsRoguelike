@@ -9,8 +9,11 @@
 // Layers
 enum Layer
 {
-	BackLayer,
-	FrontLayer,
+	// Background layer
+	BackgroundLayer,
+	// Foreground layer
+	ForegroundLayer,
+	// Background layer
 	InterfaceLayer
 };
 

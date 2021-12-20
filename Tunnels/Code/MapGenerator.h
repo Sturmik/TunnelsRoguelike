@@ -65,5 +65,5 @@ public:
 	}
 
 	// Generates map
-	void NextMap(int numberOfRooms);
+	void GenerateMap(int numberOfRooms);
 };
