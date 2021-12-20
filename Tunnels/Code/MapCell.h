@@ -15,11 +15,11 @@ enum class CellState
 	// Unreachable, means no interactive object can interact with it
 	// nor move on it.
 	Unreachable,
-	// Invocable, specific state of the cell, which is used for trigger zones
+	// Invokable, specific state of the cell, which is used for trigger zones
 	// which are used for various tasks. Example is ladder, which can be used 
 	// by player, but not by enemies. So, in order for them to avoid this 
-	// cell and don't try to interact with it, we mark it as Invocable.
-	Invocable
+	// cell and don't try to interact with it, we mark it as Invokable.
+	Invokable
 };
 
 class MapCell : public GameObject

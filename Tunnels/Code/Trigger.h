@@ -10,7 +10,7 @@ protected:
 	void OnPositionChange() override
 	{
 		// Update cell state to invocable
-		_mapCell->SetCellState(CellState::Invocable);
+		_mapCell->SetCellState(CellState::Invokable);
 	};
 	// Trigger listener list
 	std::list<MethodEventListener*> _triggerListenersList;
